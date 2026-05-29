@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
+import { registerOpenAIAgentRoutes } from "./openaiAgents";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic } from "./vite";
@@ -31,6 +32,7 @@ export function createApp(options: CreateAppOptions = {}) {
   });
 
   registerOAuthRoutes(app);
+  registerOpenAIAgentRoutes(app);
 
   app.use(
     "/api/trpc",
