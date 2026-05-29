@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import { useLocalMemory } from '@/hooks/useLocalMemory';
 import type { Priority, Task } from '@/lib/localMemory';
+import { createGmailDraft, createGoogleCalendarEvent, createGoogleSheet } from '@/lib/googleDriveCloud';
 
 type PersonalAgentId = 'chief' | 'assistant' | 'operations' | 'calendar' | 'message' | 'excel' | 'style' | 'fitness' | 'food' | 'shows' | 'image' | 'finance' | 'shopping' | 'travel' | 'learning';
 type BackendAgentId = 'assistant' | 'style' | 'fitness' | 'food' | 'shows' | 'image';
@@ -13,9 +14,9 @@ const agents: AgentProfile[] = [
   { id: 'chief', backend: 'assistant', name: 'القائد العام', icon: '🧠', promise: 'يفهم الطلب ويوزع التنفيذ على بقية الوكلاء.', examples: ['قرر ماذا أفعل اليوم ونفّذ', 'رتب أولوياتي', 'حوّل الفوضى إلى خطة'] },
   { id: 'assistant', backend: 'assistant', name: 'السكرتير الشخصي', icon: '🧑‍💼', promise: 'ينشئ مهام وملاحظات ومسودات متابعة.', examples: ['اكتب مسودة متابعة', 'رتب لي يومي', 'اعمل خطة متابعة'] },
   { id: 'operations', backend: 'assistant', name: 'وكيل العمليات', icon: '⚙️', promise: 'يحوّل المشاريع إلى خطوات تنفيذية ومتابعة.', examples: ['قسم المشروع إلى خطوات', 'اعمل checklist للتشغيل', 'حدد المتعثر'] },
-  { id: 'calendar', backend: 'assistant', name: 'وكيل التقويم', icon: '📅', promise: 'يحوّل الطلب إلى موعد وملف تقويم.', examples: ['جدول لي المهمة غدًا 9 صباحًا', 'رتب أسبوعي', 'أضف متابعة للتقويم'] },
-  { id: 'message', backend: 'assistant', name: 'وكيل الرسائل', icon: '✉️', promise: 'يجهز مسودات إيميل ورسائل متابعة.', examples: ['اكتب إيميل رسمي', 'جهز رسالة واتساب', 'اكتب رد مختصر'] },
-  { id: 'excel', backend: 'assistant', name: 'وكيل Excel', icon: '📊', promise: 'ينشئ جداول CSV قابلة للفتح في Excel.', examples: ['جهز جدول متابعة', 'اعمل ملف مصاريف', 'نظم قائمة عملاء'] },
+  { id: 'calendar', backend: 'assistant', name: 'وكيل التقويم', icon: '📅', promise: 'يحوّل الطلب إلى موعد ويرسله إلى Google Calendar.', examples: ['جدول لي المهمة غدًا 9 صباحًا', 'رتب أسبوعي', 'أضف متابعة للتقويم'] },
+  { id: 'message', backend: 'assistant', name: 'وكيل الرسائل', icon: '✉️', promise: 'يجهز مسودات Gmail ورسائل متابعة.', examples: ['اكتب إيميل رسمي', 'جهز رسالة متابعة', 'اكتب رد مختصر'] },
+  { id: 'excel', backend: 'assistant', name: 'وكيل Excel', icon: '📊', promise: 'ينشئ جداول ويرسلها إلى Google Sheets.', examples: ['جهز جدول متابعة', 'اعمل ملف مصاريف', 'نظم قائمة عملاء'] },
   { id: 'style', backend: 'style', name: 'وكيل الملابس', icon: '👔', promise: 'يحلل صورة أو مناسبة ويقترح لبس.', examples: ['اقترح لبس رسمي', 'حلل صورتي للبس', 'رتب الألوان'], image: true },
   { id: 'fitness', backend: 'fitness', name: 'وكيل الرياضة', icon: '🏃', promise: 'ينشئ خطة نشاط وتمارين عملية.', examples: ['خطة مشي أسبوعية', 'تمارين 20 دقيقة', 'ارجعني للنشاط'] },
   { id: 'food', backend: 'food', name: 'وكيل الأكل', icon: '🍽️', promise: 'يقترح وجبات ويحوّلها لقائمة.', examples: ['عشاء خفيف', 'خيارات صحية', 'قائمة أكل أسبوعية'] },
@@ -39,11 +40,19 @@ function buildFallbackActions(agent: AgentProfile, prompt: string, text: string)
   const lower = `${prompt} ${agent.id}`.toLowerCase();
   const actions: AgentAction[] = [];
   actions.push({ id: uid(), type: 'create_note', title: `قرار ${agent.name}`, description: text || prompt, priority: 'medium' });
-  if (lower.includes('excel') || lower.includes('جدول') || agent.id === 'excel' || agent.id === 'finance') actions.push({ id: uid(), type: 'csv_file', title: `جدول ${agent.name}`, description: 'تصدير جدول قابل للفتح في Excel', payload: { columns: ['البند', 'الحالة', 'الموعد', 'ملاحظة'], rows: [['إجراء 1', 'جديد', today(), prompt], ['متابعة', 'قيد التنفيذ', today(), text.slice(0, 120)]] } });
+  if (lower.includes('excel') || lower.includes('جدول') || agent.id === 'excel' || agent.id === 'finance') actions.push({ id: uid(), type: 'csv_file', title: `جدول ${agent.name}`, description: 'إنشاء Google Sheet وجدول CSV احتياطي', payload: { columns: ['البند', 'الحالة', 'الموعد', 'ملاحظة'], rows: [['إجراء 1', 'جديد', today(), prompt], ['متابعة', 'قيد التنفيذ', today(), text.slice(0, 120)]] } });
   if (lower.includes('تقويم') || lower.includes('موعد') || lower.includes('جدول') || agent.id === 'calendar') actions.push({ id: uid(), type: 'calendar_file', title: prompt.slice(0, 50) || 'موعد من الوكيل', description: text, dueDate: today(), dueTime: '09:00', priority: 'medium' });
-  if (lower.includes('ايميل') || lower.includes('إيميل') || lower.includes('رسالة') || agent.id === 'message') actions.push({ id: uid(), type: 'message_draft', title: `مسودة ${agent.name}`, description: text || prompt, priority: 'medium' });
+  if (lower.includes('ايميل') || lower.includes('إيميل') || lower.includes('رسالة') || lower.includes('email') || agent.id === 'message') actions.push({ id: uid(), type: 'message_draft', title: `مسودة ${agent.name}`, description: text || prompt, priority: 'medium', payload: { to: '', subject: `متابعة - ${agent.name}` } });
   actions.push({ id: uid(), type: 'create_task', title: `تنفيذ: ${prompt.slice(0, 45) || agent.name}`, description: text || prompt, dueDate: today(), priority: 'high' });
   return actions.slice(0, 5);
+}
+
+function normalizeType(type: string): ActionType {
+  if (type === 'calendar_event' || type === 'google_calendar') return 'calendar_file';
+  if (type === 'email_draft' || type === 'gmail_draft') return 'message_draft';
+  if (type === 'google_sheet' || type === 'sheet') return 'csv_file';
+  if (['create_task', 'create_note', 'calendar_file', 'message_draft', 'csv_file', 'checklist', 'open_service'].includes(type)) return type as ActionType;
+  return 'create_task';
 }
 
 function tryParseActions(text: string, agent: AgentProfile, prompt: string): AgentAction[] {
@@ -51,7 +60,7 @@ function tryParseActions(text: string, agent: AgentProfile, prompt: string): Age
   if (match) {
     try {
       const parsed = JSON.parse(match[0]);
-      if (Array.isArray(parsed.actions)) return parsed.actions.map((a: any) => ({ id: uid(), type: a.type || 'create_task', title: a.title || 'إجراء من الوكيل', description: a.description || parsed.guidance || text, dueDate: a.dueDate || '', dueTime: a.dueTime || '', priority: a.priority || 'medium', payload: a.payload || {} }));
+      if (Array.isArray(parsed.actions)) return parsed.actions.map((a: any) => ({ id: uid(), type: normalizeType(a.type || 'create_task'), title: a.title || 'إجراء من الوكيل', description: a.description || parsed.guidance || text, dueDate: a.dueDate || '', dueTime: a.dueTime || '', priority: a.priority || 'medium', payload: a.payload || {} }));
     } catch {}
   }
   return buildFallbackActions(agent, prompt, text);
@@ -77,14 +86,14 @@ export default function PersonalAgentsPage() {
 
   async function askAgent() {
     setBusy(true); setError(''); setResult(''); setActions([]);
-    const executablePrompt = `${prompt}\n\nأجب بقرار مختصر ثم اقترح إجراءات تنفيذية داخل التطبيق. إن استطعت أرجع JSON يحتوي actions بأنواع: create_task, create_note, calendar_file, message_draft, csv_file, checklist, open_service.`;
+    const executablePrompt = `${prompt}\n\nأجب بقرار مختصر ثم اقترح إجراءات تنفيذية داخل التطبيق. إن استطعت أرجع JSON يحتوي actions بأنواع: create_task, create_note, calendar_file, message_draft, csv_file, checklist, open_service. عند طلب التقويم استخدم calendar_file. عند طلب إيميل استخدم message_draft. عند طلب Excel استخدم csv_file.`;
     try {
       const response = await fetch('/api/agents/personal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ agentId: selectedAgent.backend, prompt: executablePrompt, imageDataUrl, context: { projects: memory.projects, tasks: memory.tasks, notes: memory.notes } }) });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.message || 'فشل تشغيل الوكيل');
       const text = data.plan?.guidance || data.plan?.summary || data.text || '';
       const serverActions = Array.isArray(data.plan?.actions) ? data.plan.actions : null;
-      const nextActions = serverActions ? serverActions.map((a: any) => ({ id: uid(), type: a.type || 'create_task', title: a.title || 'إجراء', description: a.description || text, dueDate: a.dueDate || '', dueTime: a.dueTime || '', priority: a.priority || 'medium', payload: a.payload || {} })) : tryParseActions(data.text || text, selectedAgent, prompt);
+      const nextActions = serverActions ? serverActions.map((a: any) => ({ id: uid(), type: normalizeType(a.type || 'create_task'), title: a.title || 'إجراء', description: a.description || text, dueDate: a.dueDate || '', dueTime: a.dueTime || '', priority: a.priority || 'medium', payload: a.payload || {} })) : tryParseActions(data.text || text, selectedAgent, prompt);
       setResult(text || data.text || 'تم توليد إجراءات تنفيذية.');
       setActions(nextActions);
     } catch (err) { setError(err instanceof Error ? err.message : 'حدث خطأ غير معروف'); }
@@ -92,23 +101,47 @@ export default function PersonalAgentsPage() {
   }
 
   async function executeAction(action: AgentAction) {
-    if (action.type === 'create_task' || action.type === 'checklist') await memory.saveTask({ title: action.title, description: action.description, priority: action.priority || 'medium', status: 'todo', dueDate: action.dueDate || today(), dueTime: action.dueTime || '', listName: selectedAgent.name, recurrence: 'none' });
-    if (action.type === 'create_note' || action.type === 'message_draft') await memory.saveNote({ title: action.title, body: action.description, tags: ['agent', selectedAgent.id, action.type], pinned: action.type === 'message_draft' });
-    if (action.type === 'calendar_file') downloadIcs(action.title, action.description, action.dueDate || today(), action.dueTime || '09:00');
-    if (action.type === 'csv_file') { const columns = action.payload?.columns || ['العنوان', 'الوصف']; const rows = action.payload?.rows || [[action.title, action.description]]; const csv = [columns, ...rows].map((row: any[]) => row.map((cell) => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(',')).join('\n'); downloadTextFile(`${action.title || 'agent-table'}.csv`, `\ufeff${csv}`, 'text/csv;charset=utf-8'); }
-    if (action.type === 'open_service') window.location.href = '/system';
-    setActions((items) => items.map((item) => item.id === action.id ? { ...item, executed: true } : item));
+    try {
+      if (action.type === 'create_task' || action.type === 'checklist') {
+        await memory.saveTask({ title: action.title, description: action.description, priority: action.priority || 'medium', status: 'todo', dueDate: action.dueDate || today(), dueTime: action.dueTime || '', listName: selectedAgent.name, recurrence: 'none' });
+      }
+      if (action.type === 'create_note') {
+        await memory.saveNote({ title: action.title, body: action.description, tags: ['agent', selectedAgent.id, action.type], pinned: false });
+      }
+      if (action.type === 'message_draft') {
+        await createGmailDraft({ to: action.payload?.to || '', subject: action.payload?.subject || action.title, body: action.description });
+        await memory.saveNote({ title: `مسودة Gmail: ${action.title}`, body: action.description, tags: ['gmail', 'draft', selectedAgent.id], pinned: true });
+      }
+      if (action.type === 'calendar_file') {
+        const task = await memory.saveTask({ title: action.title, description: action.description, priority: action.priority || 'medium', status: 'todo', dueDate: action.dueDate || today(), dueTime: action.dueTime || '09:00', listName: selectedAgent.name, recurrence: 'none' });
+        try { await createGoogleCalendarEvent(task); } catch { downloadIcs(action.title, action.description, action.dueDate || today(), action.dueTime || '09:00'); }
+      }
+      if (action.type === 'csv_file') {
+        const columns = action.payload?.columns || ['العنوان', 'الوصف'];
+        const rows = action.payload?.rows || [[action.title, action.description]];
+        try { await createGoogleSheet({ title: action.title || 'Agent Sheet', columns, rows }); }
+        catch {
+          const csv = [columns, ...rows].map((row: any[]) => row.map((cell) => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(',')).join('\n');
+          downloadTextFile(`${action.title || 'agent-table'}.csv`, `\ufeff${csv}`, 'text/csv;charset=utf-8');
+        }
+      }
+      if (action.type === 'open_service') window.location.href = '/system';
+      setActions((items) => items.map((item) => item.id === action.id ? { ...item, executed: true } : item));
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'فشل تنفيذ الإجراء');
+    }
   }
 
   async function executeAll() { for (const action of actions.filter((item) => !item.executed)) await executeAction(action); }
 
   return (
     <main className="agents-shell" dir="rtl"><style>{styles}</style>
-      <header className="hero-card"><a className="back" href="/">← الرئيسية</a><a className="hub" href="/system">مركز النظام</a><span className="eyebrow">Agent Command Center</span><h1>الوكلاء التنفيذيون</h1><p>الوكيل هنا لا يرد فقط. يقرر ويحوّل قراره إلى إجراءات قابلة للتنفيذ داخل التطبيق.</p><div className="status-pill">{status?.openaiConfigured ? `OpenAI متصل · ${status.model}` : 'OpenAI غير مفعّل: أضف OPENAI_API_KEY في Vercel'}</div></header>
+      <header className="hero-card"><a className="back" href="/">← الرئيسية</a><a className="hub" href="/system">مركز النظام</a><span className="eyebrow">Agent Command Center</span><h1>الوكلاء التنفيذيون</h1><p>الوكيل هنا لا يرد فقط. يقرر ويحوّل قراره إلى إجراءات قابلة للتنفيذ داخل التطبيق وGoogle.</p><div className="status-pill">{status?.openaiConfigured ? `OpenAI متصل · ${status.model}` : 'OpenAI غير مفعّل: أضف OPENAI_API_KEY في Vercel'}</div></header>
       <section className="agent-grid">{agents.map((agent) => <button key={agent.id} className={`agent-tile ${agent.id === agentId ? 'active' : ''}`} onClick={() => setAgentId(agent.id)}><b>{agent.icon}</b><strong>{agent.name}</strong><small>{agent.promise}</small></button>)}</section>
       <section className="workspace"><div className="panel composer"><div className="section-title"><h2>{selectedAgent.icon} {selectedAgent.name}</h2><span>{selectedAgent.image ? 'يدعم الصور' : 'ينفذ إجراءات'}</span></div><p>{selectedAgent.promise}</p><div className="chips">{selectedAgent.examples.map((item) => <button key={item} onClick={() => setPrompt(item)}>{item}</button>)}</div><textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="اطلب من الوكيل قرار وتنفيذ..." />{selectedAgent.image && <label className="upload">ارفع صورة<input type="file" accept="image/*" onChange={handleImage} /></label>}{imageDataUrl && <img className="preview" src={imageDataUrl} alt="الصورة المرفوعة" />}<button className="primary" disabled={busy} onClick={askAgent}>{busy ? 'جاري التفكير والتنفيذ...' : 'اطلب قرار + إجراءات'}</button>{error && <div className="error">{error}</div>}</div>
       <div className="panel result"><div className="section-title"><h2>قرار الوكيل</h2><span>{actions.length} إجراء</span></div><pre>{result || 'اكتب طلبك، وسيحوّله الوكيل إلى إجراءات تنفيذية.'}</pre>{actions.length > 0 && <button className="primary" onClick={executeAll}>نفّذ كل الإجراءات</button>}</div></section>
-      <section className="panel"><div className="section-title"><h2>إجراءات قابلة للتنفيذ</h2><span>Tasks / Notes / Calendar / CSV</span></div><div className="action-list">{actions.map((action) => <article key={action.id} className={action.executed ? 'done action-card' : 'action-card'}><div><b>{action.title}</b><p>{action.description}</p><small>{action.type} · {action.dueDate || 'بدون تاريخ'} · {action.priority || 'medium'}</small></div><button onClick={() => executeAction(action)}>{action.executed ? 'تم' : 'نفّذ'}</button></article>)}{!actions.length && <small>لا توجد إجراءات بعد.</small>}</div></section>
+      <section className="panel"><div className="section-title"><h2>إجراءات قابلة للتنفيذ</h2><span>Tasks / Gmail / Sheets / Calendar</span></div><div className="action-list">{actions.map((action) => <article key={action.id} className={action.executed ? 'done action-card' : 'action-card'}><div><b>{action.title}</b><p>{action.description}</p><small>{action.type} · {action.dueDate || 'بدون تاريخ'} · {action.priority || 'medium'}</small></div><button onClick={() => executeAction(action)}>{action.executed ? 'تم' : 'نفّذ'}</button></article>)}{!actions.length && <small>لا توجد إجراءات بعد.</small>}</div></section>
       <section className="panel"><div className="section-title"><h2>سياق من نظامك</h2><span>ذاكرة محلية</span></div><div className="task-list">{openTasks.map((task: Task) => <div key={task.id} className="task-row"><b>{task.title}</b><small>{task.dueDate || 'بدون تاريخ'} · {task.priority}</small></div>)}</div></section>
     </main>
   );
