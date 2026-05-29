@@ -19,11 +19,12 @@ import { Home3D } from "./pages/Home3D";
 import LocalFocusFlow from "./pages/LocalFocusFlow";
 import PersonalAgentsPage from "./pages/PersonalAgentsPage";
 import SystemHubPage from "./pages/SystemHubPage";
+import FocusFlowOS from "./pages/FocusFlowOS";
 
 function Router() {
   return (
     <Switch>
-      <Route path={"/"} component={PersonalAgentsPage} />
+      <Route path={"/"} component={FocusFlowOS} />
       <Route path={"/focus"} component={LocalFocusFlow} />
       <Route path={"/agents"} component={PersonalAgentsPage} />
       <Route path={"/personal-agents"} component={PersonalAgentsPage} />
