@@ -310,6 +310,11 @@ export const projectRequirements = mysqlTable("projectRequirements", {
   status: mysqlEnum("status", ["pending", "allocated", "used", "completed"]).default("pending"),
   priority: mysqlEnum("priority", ["منخفضة", "متوسطة", "عالية"]).default("متوسطة"),
   notes: text("notes"),
+  isCompleted: boolean("isCompleted").default(false),
+  completedAt: timestamp("completedAt"),
+  completedBy: int("completedBy"),
+  sharedWith: text("sharedWith"),
+  sharePermissions: text("sharePermissions"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
