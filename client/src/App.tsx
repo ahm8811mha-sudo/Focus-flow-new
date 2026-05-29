@@ -18,6 +18,7 @@ import SearchPage from "./pages/SearchPage";
 import { Home3D } from "./pages/Home3D";
 import LocalFocusFlow from "./pages/LocalFocusFlow";
 import PersonalAgentsPage from "./pages/PersonalAgentsPage";
+import SystemHubPage from "./pages/SystemHubPage";
 
 function Router() {
   return (
@@ -25,6 +26,8 @@ function Router() {
       <Route path={"/"} component={LocalFocusFlow} />
       <Route path={"/agents"} component={PersonalAgentsPage} />
       <Route path={"/personal-agents"} component={PersonalAgentsPage} />
+      <Route path={"/system"} component={SystemHubPage} />
+      <Route path={"/hub"} component={SystemHubPage} />
       <Route path={"/home-3d"} component={Home3D} />
       <Route path={"/classic"} component={Home} />
       <Route path={"/tasks"}>
