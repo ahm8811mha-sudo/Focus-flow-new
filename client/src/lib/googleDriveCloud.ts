@@ -6,6 +6,8 @@ const BACKUP_FILE_NAME = 'focus-flow-premium-backup.json';
 const GOOGLE_SCOPE = [
   'https://www.googleapis.com/auth/drive.file',
   'https://www.googleapis.com/auth/calendar.events',
+  'https://www.googleapis.com/auth/gmail.compose',
+  'https://www.googleapis.com/auth/spreadsheets',
 ].join(' ');
 
 declare global {
@@ -15,6 +17,8 @@ declare global {
 }
 
 export type CloudStatus = 'idle' | 'ready' | 'missing-client-id' | 'connected' | 'error';
+export type GmailDraftInput = { to?: string; subject: string; body: string; cc?: string; bcc?: string };
+export type SheetInput = { title: string; columns: string[]; rows: Array<Array<string | number | boolean | null | undefined>> };
 
 export function getGoogleClientId() {
   return localStorage.getItem(CLIENT_ID_KEY) || import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
@@ -91,6 +95,13 @@ async function googleFetch(path: string, token: string, init?: RequestInit) {
   return response;
 }
 
+function base64Url(input: string) {
+  const utf8 = new TextEncoder().encode(input);
+  let binary = '';
+  utf8.forEach((byte) => { binary += String.fromCharCode(byte); });
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
 async function findBackupFile(token: string): Promise<string | null> {
   const query = encodeURIComponent(`name='${BACKUP_FILE_NAME}' and trashed=false`);
   const url = `https://www.googleapis.com/drive/v3/files?q=${query}&spaces=appDataFolder&fields=files(id,name,modifiedTime)&pageSize=1`;
@@ -137,7 +148,7 @@ export async function restoreFromGoogleDrive(token = getStoredDriveToken()) {
   return true;
 }
 
-function toGoogleDateTime(task: Task) {
+function toGoogleDateTime(task: Pick<Task, 'dueDate' | 'dueTime'>) {
   const date = task.dueDate || new Date().toISOString().slice(0, 10);
   const time = task.dueTime || '09:00';
   const start = new Date(`${date}T${time}:00`);
@@ -174,4 +185,52 @@ export async function syncTasksToGoogleCalendar(tasks: Task[], token = getStored
   }
   await addActivity('مزامنة التقويم', `تم إرسال ${results.length} مهمة إلى Google Calendar`, 'system');
   return results;
+}
+
+export async function createGmailDraft(input: GmailDraftInput, token = getStoredDriveToken()) {
+  if (!token) throw new Error('اربط Google أولًا');
+  const lines = [
+    input.to ? `To: ${input.to}` : '',
+    input.cc ? `Cc: ${input.cc}` : '',
+    input.bcc ? `Bcc: ${input.bcc}` : '',
+    `Subject: ${input.subject}`,
+    'Content-Type: text/plain; charset=UTF-8',
+    '',
+    input.body,
+  ].filter(Boolean).join('\r\n');
+  const response = await googleFetch('https://gmail.googleapis.com/gmail/v1/users/me/drafts', token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: { raw: base64Url(lines) } }),
+  });
+  const data = await response.json();
+  await addActivity('Gmail Draft', `تم إنشاء مسودة Gmail: ${input.subject}`, 'system');
+  return data;
+}
+
+export async function createGoogleSheet(input: SheetInput, token = getStoredDriveToken()) {
+  if (!token) throw new Error('اربط Google أولًا');
+  const createResponse = await googleFetch('https://sheets.googleapis.com/v4/spreadsheets', token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ properties: { title: input.title || 'Focus Flow Sheet' } }),
+  });
+  const spreadsheet = await createResponse.json();
+  const spreadsheetId = spreadsheet.spreadsheetId;
+  const values = [input.columns, ...input.rows].map((row) => row.map((cell) => cell ?? ''));
+  await googleFetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A1:append?valueInputOption=USER_ENTERED`, token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ values }),
+  });
+  await addActivity('Google Sheets', `تم إنشاء Google Sheet: ${input.title}`, 'system');
+  return spreadsheet;
+}
+
+export async function exportTasksToGoogleSheet(tasks: Task[], token = getStoredDriveToken()) {
+  return createGoogleSheet({
+    title: `Focus Flow Tasks ${new Date().toISOString().slice(0, 10)}`,
+    columns: ['العنوان', 'الوصف', 'الحالة', 'الأولوية', 'التاريخ', 'الوقت', 'القائمة'],
+    rows: tasks.map((task) => [task.title, task.description, task.status, task.priority, task.dueDate || '', task.dueTime || '', task.listName]),
+  }, token);
 }
