@@ -23,7 +23,8 @@ import SystemHubPage from "./pages/SystemHubPage";
 function Router() {
   return (
     <Switch>
-      <Route path={"/"} component={LocalFocusFlow} />
+      <Route path={"/"} component={PersonalAgentsPage} />
+      <Route path={"/focus"} component={LocalFocusFlow} />
       <Route path={"/agents"} component={PersonalAgentsPage} />
       <Route path={"/personal-agents"} component={PersonalAgentsPage} />
       <Route path={"/system"} component={SystemHubPage} />
