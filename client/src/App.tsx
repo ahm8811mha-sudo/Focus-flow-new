@@ -17,11 +17,14 @@ import SettingsPage from "./pages/SettingsPage";
 import SearchPage from "./pages/SearchPage";
 import { Home3D } from "./pages/Home3D";
 import LocalFocusFlow from "./pages/LocalFocusFlow";
+import PersonalAgentsPage from "./pages/PersonalAgentsPage";
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={LocalFocusFlow} />
+      <Route path={"/agents"} component={PersonalAgentsPage} />
+      <Route path={"/personal-agents"} component={PersonalAgentsPage} />
       <Route path={"/home-3d"} component={Home3D} />
       <Route path={"/classic"} component={Home} />
       <Route path={"/tasks"}>
@@ -88,7 +91,6 @@ function Router() {
         )}
       </Route>
       <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
   );
