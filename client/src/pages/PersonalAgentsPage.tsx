@@ -6,8 +6,27 @@ import { createGmailDraft, createGoogleCalendarEvent, createGoogleSheet } from '
 type PersonalAgentId = 'chief' | 'assistant' | 'operations' | 'calendar' | 'message' | 'excel' | 'finance' | 'learning';
 type BackendAgentId = 'assistant';
 type ActionType = 'create_task' | 'create_note' | 'calendar_file' | 'message_draft' | 'csv_file' | 'checklist' | 'open_service';
-type AgentProfile = { id: PersonalAgentId; backend: BackendAgentId; name: string; mark: string; promise: string; examples: string[] };
-type AgentAction = { id: string; type: ActionType; title: string; description: string; dueDate?: string; dueTime?: string; priority?: Priority; payload?: any; executed?: boolean };
+
+type AgentProfile = {
+  id: PersonalAgentId;
+  backend: BackendAgentId;
+  name: string;
+  mark: string;
+  promise: string;
+  examples: string[];
+};
+
+type AgentAction = {
+  id: string;
+  type: ActionType;
+  title: string;
+  description: string;
+  dueDate?: string;
+  dueTime?: string;
+  priority?: Priority;
+  payload?: any;
+  executed?: boolean;
+};
 
 const agents: AgentProfile[] = [
   { id: 'chief', backend: 'assistant', name: 'القائد العام', mark: '01', promise: 'يحوّل الفوضى إلى قرار وخطة تنفيذ.', examples: ['قرر أهم 3 إجراءات اليوم', 'رتب أولوياتي', 'حوّل المشروع إلى خطة'] },
@@ -20,62 +39,102 @@ const agents: AgentProfile[] = [
   { id: 'learning', backend: 'assistant', name: 'التعلم', mark: '08', promise: 'يحوّل هدف التعلم إلى خطة يومية.', examples: ['علمني GitHub', 'خطة تعلم AI', 'اختبرني يوميًا'] },
 ];
 
-function today() { return new Date().toISOString().slice(0, 10); }
-function uid() { return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`; }
-function escapeIcs(text: string) { return text.replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n'); }
-function dateTimeForIcs(date = today(), time = '09:00') { const start = new Date(`${date}T${time || '09:00'}:00`); const end = new Date(start.getTime() + 3600000); const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z'); return { start: fmt(start), end: fmt(end) }; }
-function downloadTextFile(filename: string, text: string, type: string) { const blob = new Blob([text], { type }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }
-function downloadIcs(title: string, description: string, date?: string, time?: string) { const { start, end } = dateTimeForIcs(date || today(), time || '09:00'); const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Focus Flow//Agent Actions//AR', 'BEGIN:VEVENT', `UID:${uid()}@focus-flow`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')}`, `DTSTART:${start}`, `DTEND:${end}`, `SUMMARY:${escapeIcs(title)}`, `DESCRIPTION:${escapeIcs(description || 'Focus Flow action')}`, 'END:VEVENT', 'END:VCALENDAR'].join('\r\n'); downloadTextFile(`${title || 'focus-flow-calendar'}.ics`, ics, 'text/calendar;charset=utf-8'); }
-function normalizeType(type: string): ActionType { if (type === 'calendar_event' || type === 'google_calendar') return 'calendar_file'; if (type === 'email_draft' || type === 'gmail_draft') return 'message_draft'; if (type === 'google_sheet' || type === 'sheet') return 'csv_file'; if (['create_task', 'create_note', 'calendar_file', 'message_draft', 'csv_file', 'checklist', 'open_service'].includes(type)) return type as ActionType; return 'create_task'; }
-function fallbackActions(agent: AgentProfile, prompt: string, text: string): AgentAction[] { return [{ id: uid(), type: 'create_note', title: `قرار ${agent.name}`, description: text || prompt, priority: 'medium' }, { id: uid(), type: 'create_task', title: `تنفيذ: ${prompt.slice(0, 45) || agent.name}`, description: text || prompt, dueDate: today(), priority: 'high' }]; }
-function parseActions(text: string, agent: AgentProfile, prompt: string): AgentAction[] { const match = text.match(/\{[\s\S]*\}/); if (match) { try { const parsed = JSON.parse(match[0]); if (Array.isArray(parsed.actions)) return parsed.actions.map((a: any) => ({ id: uid(), type: normalizeType(a.type || 'create_task'), title: a.title || 'إجراء', description: a.description || parsed.guidance || text, dueDate: a.dueDate || '', dueTime: a.dueTime || '', priority: a.priority || 'medium', payload: a.payload || {} })); } catch {} } return fallbackActions(agent, prompt, text); }
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
 
-export default function PersonalAgentsPage() {
-  const memory = useLocalMemory();
-  const [agentId, setAgentId] = useState<PersonalAgentId>('chief');
-  const [prompt, setPrompt] = useState('قرر أهم إجراء الآن ونفذه داخل النظام');
-  const [result, setResult] = useState('');
-  const [actions, setActions] = useState<AgentAction[]>([]);
-  const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState<{ geminiConfigured?: boolean; openaiConfigured?: boolean; model?: string } | null>(null);
-  const [error, setError] = useState('');
-  const selectedAgent = useMemo(() => agents.find((a) => a.id === agentId) || agents[0], [agentId]);
-  const openTasks = useMemo(() => memory.tasks.filter((task) => task.status !== 'done').slice(0, 6), [memory.tasks]);
-  const geminiReady = Boolean(status?.geminiConfigured || status?.openaiConfigured);
-  useEffect(() => { fetch('/api/agents/status').then((res) => res.json()).then(setStatus).catch(() => setStatus(null)); }, []);
+function tomorrow() {
+  const date = new Date();
+  date.setDate(date.getDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
 
-  async function askAgent() {
-    setBusy(true); setError(''); setResult(''); setActions([]);
-    const executablePrompt = `${prompt}\n\nأجب بقرار مختصر ثم اقترح إجراءات تنفيذية داخل التطبيق. أرجع JSON يحتوي actions بأنواع create_task, create_note, calendar_file, message_draft, csv_file, checklist, open_service.`;
-    try {
-      const response = await fetch('/api/agents/personal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ agentId: selectedAgent.backend, prompt: executablePrompt, context: { projects: memory.projects, tasks: memory.tasks, notes: memory.notes } }) });
-      const data = await response.json();
-      if (!response.ok || !data.ok) throw new Error(data.message || 'فشل تشغيل الوكيل');
-      const text = data.plan?.guidance || data.plan?.summary || data.text || '';
-      const serverActions = Array.isArray(data.plan?.actions) ? data.plan.actions : null;
-     let nextActions = serverActions
-  ? serverActions.map((a: any) => ({
-      id: uid(),
-      type: normalizeType(a.type || 'create_task'),
-      title: a.title || 'إجراء',
-      description: a.description || text,
-      dueDate: a.dueDate || '',
-      dueTime: a.dueTime || '',
-      priority: a.priority || 'medium',
-      payload: a.payload || {},
-    }))
-  : parseActions(data.text || text, selectedAgent, prompt);
+function uid() {
+  return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+}
 
-if (
-  nextActions.length === 1 &&
-  nextActions[0].type === 'create_note'
-) {
-  nextActions = [
+function escapeIcs(text: string) {
+  return text
+    .replace(/\\/g, '\\\\')
+    .replace(/,/g, '\\,')
+    .replace(/;/g, '\\;')
+    .replace(/\n/g, '\\n');
+}
+
+function dateTimeForIcs(date = today(), time = '09:00') {
+  const start = new Date(`${date}T${time || '09:00'}:00`);
+  const end = new Date(start.getTime() + 3600000);
+
+  const fmt = (d: Date) =>
+    d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+
+  return { start: fmt(start), end: fmt(end) };
+}
+
+function downloadTextFile(filename: string, text: string, type: string) {
+  const blob = new Blob([text], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+
+  a.href = url;
+  a.download = filename;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function downloadIcs(title: string, description: string, date?: string, time?: string) {
+  const { start, end } = dateTimeForIcs(date || today(), time || '09:00');
+
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Focus Flow//Agent Actions//AR',
+    'BEGIN:VEVENT',
+    `UID:${uid()}@focus-flow`,
+    `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')}`,
+    `DTSTART:${start}`,
+    `DTEND:${end}`,
+    `SUMMARY:${escapeIcs(title)}`,
+    `DESCRIPTION:${escapeIcs(description || 'Focus Flow action')}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+
+  downloadTextFile(`${title || 'focus-flow-calendar'}.ics`, ics, 'text/calendar;charset=utf-8');
+}
+
+function normalizeType(type: string): ActionType {
+  if (type === 'calendar_event' || type === 'google_calendar') return 'calendar_file';
+  if (type === 'email_draft' || type === 'gmail_draft') return 'message_draft';
+  if (type === 'google_sheet' || type === 'sheet') return 'csv_file';
+
+  if (
+    [
+      'create_task',
+      'create_note',
+      'calendar_file',
+      'message_draft',
+      'csv_file',
+      'checklist',
+      'open_service',
+    ].includes(type)
+  ) {
+    return type as ActionType;
+  }
+
+  return 'create_task';
+}
+
+function fallbackActions(prompt: string, text = ''): AgentAction[] {
+  const description = prompt || text || 'طلب جديد';
+
+  return [
     {
       id: uid(),
       type: 'create_task',
       title: 'تحديد المطلوب وتجهيز التنفيذ',
-      description: prompt,
+      description,
       dueDate: today(),
       dueTime: '09:00',
       priority: 'high',
@@ -109,8 +168,8 @@ if (
       type: 'calendar_file',
       title: 'تذكير متابعة التنفيذ',
       description: 'راجع التنفيذ واستكمل البنود المتبقية.',
-      dueDate: today(),
-      dueTime: '15:00',
+      dueDate: tomorrow(),
+      dueTime: '10:00',
       priority: 'high',
       payload: {},
     },
@@ -119,45 +178,418 @@ if (
       type: 'create_task',
       title: 'توثيق النتائج والخطوة التالية',
       description: 'سجل ما تم إنجازه وحدد المتابعة التالية.',
-      dueDate: today(),
-      dueTime: '16:00',
+      dueDate: tomorrow(),
+      dueTime: '15:00',
       priority: 'medium',
       payload: {},
     },
   ];
 }
 
-const executedActions = [];
+function parseActions(text: string, prompt: string): AgentAction[] {
+  const match = text.match(/\{[\s\S]*\}/);
 
-for (const action of nextActions) {
-  await executeAction(action);
-  executedActions.push({
-    ...action,
-    executed: true,
-  });
-}
-
-setResult(text || data.text || 'تم إنشاء وتنفيذ الإجراءات تلقائيًا.');
-setActions(executedActions);
-      setResult(text || data.text || 'تم توليد إجراءات تنفيذية.'); setActions(nextActions);
-    } catch (err) { setError(err instanceof Error ? err.message : 'حدث خطأ غير معروف'); }
-    finally { setBusy(false); }
-  }
-
-  async function executeAction(action: AgentAction) {
+  if (match) {
     try {
-      if (action.type === 'create_task' || action.type === 'checklist') await memory.saveTask({ title: action.title, description: action.description, priority: action.priority || 'medium', status: 'todo', dueDate: action.dueDate || today(), dueTime: action.dueTime || '', listName: selectedAgent.name, recurrence: 'none' });
-      if (action.type === 'create_note') await memory.saveNote({ title: action.title, body: action.description, tags: ['agent', selectedAgent.id, action.type], pinned: false });
-      if (action.type === 'message_draft') { await createGmailDraft({ to: action.payload?.to || '', subject: action.payload?.subject || action.title, body: action.description }); await memory.saveNote({ title: `مسودة Gmail: ${action.title}`, body: action.description, tags: ['gmail', 'draft', selectedAgent.id], pinned: true }); }
-      if (action.type === 'calendar_file') { const task = await memory.saveTask({ title: action.title, description: action.description, priority: action.priority || 'medium', status: 'todo', dueDate: action.dueDate || today(), dueTime: action.dueTime || '09:00', listName: selectedAgent.name, recurrence: 'none' }); try { await createGoogleCalendarEvent(task); } catch { downloadIcs(action.title, action.description, action.dueDate || today(), action.dueTime || '09:00'); } }
-      if (action.type === 'csv_file') { const columns = action.payload?.columns || ['العنوان', 'الوصف']; const rows = action.payload?.rows || [[action.title, action.description]]; try { await createGoogleSheet({ title: action.title || 'Agent Sheet', columns, rows }); } catch { const csv = [columns, ...rows].map((row: any[]) => row.map((cell) => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(',')).join('\n'); downloadTextFile(`${action.title || 'agent-table'}.csv`, `\ufeff${csv}`, 'text/csv;charset=utf-8'); } }
-      if (action.type === 'open_service') window.location.href = '/system';
-      setActions((items) => items.map((item) => item.id === action.id ? { ...item, executed: true } : item)); setError('');
-    } catch (err) { setError(err instanceof Error ? err.message : 'فشل تنفيذ الإجراء'); }
-  }
-  async function executeAll() { for (const action of actions.filter((item) => !item.executed)) await executeAction(action); }
+      const parsed = JSON.parse(match[0]);
 
-  return <main className="agents-shell" dir="rtl"><style>{styles}</style><header className="hero-card"><a className="back" href="/">← الرئيسية</a><a className="hub" href="/system">مركز النظام</a><span className="eyebrow">Agent Command Center</span><h1>الوكلاء التنفيذيون</h1><p>واجهة احترافية لتنفيذ القرارات: Gemini يفهم الطلب، والنظام يحوله إلى مهام ومسودات وجداول ومواعيد.</p><div className="status-pill">{geminiReady ? `Gemini متصل · ${status?.model || 'gemini-2.5-flash'}` : 'Gemini غير مفعّل: أضف GEMINI_API_KEY في Vercel'}</div></header><section className="agent-grid">{agents.map((agent) => <button key={agent.id} className={`agent-tile ${agent.id === agentId ? 'active' : ''}`} onClick={() => setAgentId(agent.id)}><b>{agent.mark}</b><strong>{agent.name}</strong><small>{agent.promise}</small></button>)}</section><section className="workspace"><div className="panel composer"><div className="section-title"><h2>{selectedAgent.name}</h2><span>ينفذ إجراءات</span></div><p>{selectedAgent.promise}</p><div className="chips">{selectedAgent.examples.map((item) => <button key={item} onClick={() => setPrompt(item)}>{item}</button>)}</div><textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="اطلب من الوكيل قرار وتنفيذ..." /><button className="primary" disabled={busy} onClick={askAgent}>{busy ? 'جاري التفكير والتنفيذ...' : 'اطلب قرار + إجراءات'}</button>{error && <div className="error">{error}</div>}</div><div className="panel result"><div className="section-title"><h2>قرار الوكيل</h2><span>{actions.length} إجراء</span></div><pre>{result || 'اكتب طلبك، وسيحوّله الوكيل إلى إجراءات تنفيذية.'}</pre>{actions.length > 0 && <button className="primary" onClick={executeAll}>نفّذ كل الإجراءات</button>}</div></section><section className="panel"><div className="section-title"><h2>إجراءات قابلة للتنفيذ</h2><span>Tasks / Gmail / Sheets / Calendar</span></div><div className="action-list">{actions.map((action) => <article key={action.id} className={action.executed ? 'done action-card' : 'action-card'}><div><b>{action.title}</b><p>{action.description}</p><small>{action.type} · {action.dueDate || 'بدون تاريخ'} · {action.priority || 'medium'}</small></div><button onClick={() => executeAction(action)}>{action.executed ? 'تم' : 'نفّذ'}</button></article>)}{!actions.length && <small>لا توجد إجراءات بعد.</small>}</div></section><section className="panel"><div className="section-title"><h2>سياق من نظامك</h2><span>ذاكرة محلية</span></div><div className="task-list">{openTasks.map((task: Task) => <div key={task.id} className="task-row"><b>{task.title}</b><small>{task.dueDate || 'بدون تاريخ'} · {task.priority}</small></div>)}</div></section></main>;
+      if (Array.isArray(parsed.actions)) {
+        return parsed.actions.map((a: any) => ({
+          id: uid(),
+          type: normalizeType(a.type || 'create_task'),
+          title: a.title || 'إجراء',
+          description: a.description || parsed.guidance || text,
+          dueDate: a.dueDate || '',
+          dueTime: a.dueTime || '',
+          priority: a.priority || 'medium',
+          payload: a.payload || {},
+        }));
+      }
+    } catch {
+      // fallback below
+    }
+  }
+
+  return fallbackActions(prompt, text);
 }
 
-const styles = `:root{color-scheme:dark;font-family:Cairo,-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif;background:#050816}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,rgba(37,99,235,.35),transparent 34%),radial-gradient(circle at 90% 8%,rgba(124,58,237,.32),transparent 30%),#050816;color:#f8fafc}.agents-shell{max-width:1180px;margin:auto;padding:18px 14px 90px}.hero-card,.panel,.agent-tile{border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.04));border-radius:34px;box-shadow:0 24px 80px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(18px)}.hero-card{padding:26px;text-align:center;display:grid;gap:12px;position:relative;overflow:hidden}.hero-card:before{content:"";position:absolute;inset:-120px 25% auto;width:380px;height:380px;border-radius:999px;background:rgba(6,182,212,.18);filter:blur(55px)}.back,.hub{position:relative;color:#bfdbfe;text-decoration:none}.back{justify-self:start}.hub{position:absolute;left:24px;top:24px}.eyebrow{color:#67e8f9;letter-spacing:.24em;text-transform:uppercase;font-size:12px}.hero-card h1{position:relative;font-size:clamp(42px,10vw,82px);letter-spacing:-.05em;margin:0}.hero-card p{position:relative;max-width:800px;margin:auto;color:#cbd5e1;line-height:1.9}.status-pill{position:relative;display:inline-flex;justify-self:center;padding:11px 18px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.28);color:#bbf7d0}.agent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}.agent-tile{padding:16px;text-align:right;color:#fff;display:grid;gap:9px;min-height:150px;transition:.2s ease}.agent-tile:hover{transform:translateY(-4px);border-color:rgba(103,232,249,.45)}.agent-tile b{font-size:24px;color:#67e8f9}.agent-tile strong{font-size:17px}.agent-tile small,.panel p,.task-row small,.action-card small{color:#cbd5e1;line-height:1.55}.agent-tile.active{outline:2px solid rgba(103,232,249,.8);background:linear-gradient(145deg,rgba(37,99,235,.36),rgba(124,58,237,.2))}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{padding:20px;margin-top:16px}.section-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.section-title h2{margin:0}.section-title span{color:#94a3b8}.chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.chips button,.action-card button{border:0;color:#bfdbfe;background:rgba(59,130,246,.16);border-radius:999px;padding:10px 13px;font-weight:800}textarea{width:100%;min-height:155px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(15,23,42,.72);color:#fff;padding:16px;font:inherit;line-height:1.7;outline:none}.primary{margin-top:12px;width:100%;min-height:54px;border:0;border-radius:22px;background:linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed);color:white;font-weight:950;display:grid;place-items:center;box-shadow:0 16px 45px rgba(37,99,235,.28)}.primary:disabled{opacity:.65}.error{margin-top:12px;border-radius:18px;background:rgba(239,68,68,.16);color:#fecaca;padding:12px}.result pre{white-space:pre-wrap;font-family:inherit;line-height:1.9;color:#e5e7eb;min-height:250px;margin:0}.action-list,.task-list{display:grid;gap:10px}.action-card{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid rgba(255,255,255,.1);background:rgba(15,23,42,.6);padding:14px;border-radius:20px}.action-card.done{border-color:rgba(34,197,94,.5);background:rgba(22,101,52,.18)}.action-card div{display:grid;gap:5px}.action-card p{margin:0}.action-card button{min-width:95px;color:#fff;background:linear-gradient(135deg,#2563eb,#7c3aed);border-radius:16px}.task-row{display:grid;gap:4px;border:1px solid rgba(255,255,255,.1);background:rgba(15,23,42,.62);padding:14px;border-radius:18px}@media(max-width:760px){.agents-shell{padding:12px 10px 70px}.workspace{grid-template-columns:1fr}.agent-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.agent-tile{min-height:142px;padding:13px}.hub{position:static;justify-self:start}.action-card{align-items:stretch;flex-direction:column}.action-card button{width:100%;min-height:46px}}`;
+function normalizeServerActions(serverActions: any[] | null, prompt: string, text: string): AgentAction[] {
+  const nextActions = serverActions
+    ? serverActions.map((a: any) => ({
+        id: uid(),
+        type: normalizeType(a.type || 'create_task'),
+        title: a.title || 'إجراء',
+        description: a.description || text || prompt,
+        dueDate: a.dueDate || '',
+        dueTime: a.dueTime || '',
+        priority: a.priority || 'medium',
+        payload: a.payload || {},
+      }))
+    : parseActions(text, prompt);
+
+  const badSingleNote =
+    nextActions.length === 1 &&
+    nextActions[0].type === 'create_note';
+
+  const emptyOrWeak = nextActions.length === 0;
+
+  if (badSingleNote || emptyOrWeak) {
+    return fallbackActions(prompt, text);
+  }
+
+  return nextActions;
+}
+
+export default function PersonalAgentsPage() {
+  const memory = useLocalMemory();
+
+  const [agentId, setAgentId] = useState<PersonalAgentId>('chief');
+  const [prompt, setPrompt] = useState('قرر أهم إجراء الآن ونفذه داخل النظام');
+  const [result, setResult] = useState('');
+  const [actions, setActions] = useState<AgentAction[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState<{ geminiConfigured?: boolean; openaiConfigured?: boolean; model?: string } | null>(null);
+  const [error, setError] = useState('');
+
+  const selectedAgent = useMemo(
+    () => agents.find((a) => a.id === agentId) || agents[0],
+    [agentId]
+  );
+
+  const openTasks = useMemo(
+    () => memory.tasks.filter((task) => task.status !== 'done').slice(0, 6),
+    [memory.tasks]
+  );
+
+  const geminiReady = Boolean(status?.geminiConfigured || status?.openaiConfigured);
+
+  useEffect(() => {
+    fetch('/api/agents/status')
+      .then((res) => res.json())
+      .then(setStatus)
+      .catch(() => setStatus(null));
+  }, []);
+
+  async function executeAction(action: AgentAction, updateUi = true) {
+    try {
+      if (action.type === 'create_task' || action.type === 'checklist') {
+        await memory.saveTask({
+          title: action.title,
+          description: action.description,
+          priority: action.priority || 'medium',
+          status: 'todo',
+          dueDate: action.dueDate || today(),
+          dueTime: action.dueTime || '',
+          listName: selectedAgent.name,
+          recurrence: 'none',
+        });
+      }
+
+      if (action.type === 'create_note') {
+        await memory.saveNote({
+          title: action.title,
+          body: action.description,
+          tags: ['agent', selectedAgent.id, action.type],
+          pinned: false,
+        });
+      }
+
+      if (action.type === 'message_draft') {
+        await createGmailDraft({
+          to: action.payload?.to || '',
+          subject: action.payload?.subject || action.title,
+          body: action.description,
+        });
+
+        await memory.saveNote({
+          title: `مسودة Gmail: ${action.title}`,
+          body: action.description,
+          tags: ['gmail', 'draft', selectedAgent.id],
+          pinned: true,
+        });
+      }
+
+      if (action.type === 'calendar_file') {
+        const task = await memory.saveTask({
+          title: action.title,
+          description: action.description,
+          priority: action.priority || 'medium',
+          status: 'todo',
+          dueDate: action.dueDate || today(),
+          dueTime: action.dueTime || '09:00',
+          listName: selectedAgent.name,
+          recurrence: 'none',
+        });
+
+        try {
+          await createGoogleCalendarEvent(task);
+        } catch {
+          downloadIcs(
+            action.title,
+            action.description,
+            action.dueDate || today(),
+            action.dueTime || '09:00'
+          );
+        }
+      }
+
+      if (action.type === 'csv_file') {
+        const columns = action.payload?.columns || ['العنوان', 'الوصف'];
+        const rows = action.payload?.rows || [[action.title, action.description]];
+
+        try {
+          await createGoogleSheet({
+            title: action.title || 'Agent Sheet',
+            columns,
+            rows,
+          });
+        } catch {
+          const csv = [columns, ...rows]
+            .map((row: any[]) =>
+              row.map((cell) => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(',')
+            )
+            .join('\n');
+
+          downloadTextFile(
+            `${action.title || 'agent-table'}.csv`,
+            `\ufeff${csv}`,
+            'text/csv;charset=utf-8'
+          );
+        }
+      }
+
+      if (action.type === 'open_service') {
+        window.location.href = '/system';
+      }
+
+      if (updateUi) {
+        setActions((items) =>
+          items.map((item) =>
+            item.id === action.id ? { ...item, executed: true } : item
+          )
+        );
+      }
+
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'فشل تنفيذ الإجراء');
+      throw err;
+    }
+  }
+
+  async function askAgent() {
+    setBusy(true);
+    setError('');
+    setResult('');
+    setActions([]);
+
+    const executablePrompt = `${prompt}
+
+المطلوب:
+حوّل الطلب إلى إجراءات تنفيذية داخل التطبيق.
+إذا كان الطلب يحتوي مهام، مواعيد، تذكيرات، اتصالات، متابعة، جداول أو مسودات، أنشئها كإجراءات قابلة للتنفيذ.
+لا تكتفِ بملاحظة واحدة.
+أرجع JSON يحتوي actions بأنواع:
+create_task, create_note, calendar_file, message_draft, csv_file, checklist, open_service.`;
+
+    try {
+      const response = await fetch('/api/agents/personal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agentId: selectedAgent.backend,
+          prompt: executablePrompt,
+          context: {
+            projects: memory.projects,
+            tasks: memory.tasks,
+            notes: memory.notes,
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.message || 'فشل تشغيل الوكيل');
+      }
+
+      const text = data.plan?.guidance || data.plan?.summary || data.text || '';
+      const serverActions = Array.isArray(data.plan?.actions) ? data.plan.actions : null;
+      const nextActions = normalizeServerActions(serverActions, prompt, data.text || text);
+
+      const executedActions: AgentAction[] = [];
+
+      for (const action of nextActions) {
+        await executeAction(action, false);
+        executedActions.push({
+          ...action,
+          executed: true,
+        });
+      }
+
+      setResult(text || data.text || 'تم إنشاء وتنفيذ الإجراءات تلقائيًا.');
+      setActions(executedActions);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'حدث خطأ غير معروف');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function executeAll() {
+    const updated: AgentAction[] = [];
+
+    for (const action of actions) {
+      if (action.executed) {
+        updated.push(action);
+        continue;
+      }
+
+      await executeAction(action, false);
+      updated.push({
+        ...action,
+        executed: true,
+      });
+    }
+
+    setActions(updated);
+  }
+
+  const hasPendingActions = actions.some((action) => !action.executed);
+
+  return (
+    <main className="agents-shell" dir="rtl">
+      <style>{styles}</style>
+
+      <header className="hero-card">
+        <a className="back" href="/">← الرئيسية</a>
+        <a className="hub" href="/system">مركز النظام</a>
+        <span className="eyebrow">Agent Command Center</span>
+        <h1>الوكلاء التنفيذيون</h1>
+        <p>
+          واجهة احترافية لتنفيذ القرارات: Gemini يفهم الطلب، والنظام يحوله إلى مهام ومسودات وجداول ومواعيد.
+        </p>
+        <div className="status-pill">
+          {geminiReady
+            ? `Gemini متصل · ${status?.model || 'gemini-2.5-flash'}`
+            : 'Gemini غير مفعّل: أضف GEMINI_API_KEY في Vercel'}
+        </div>
+      </header>
+
+      <section className="agent-grid">
+        {agents.map((agent) => (
+          <button
+            key={agent.id}
+            className={`agent-tile ${agent.id === agentId ? 'active' : ''}`}
+            onClick={() => setAgentId(agent.id)}
+          >
+            <b>{agent.mark}</b>
+            <strong>{agent.name}</strong>
+            <small>{agent.promise}</small>
+          </button>
+        ))}
+      </section>
+
+      <section className="workspace">
+        <div className="panel composer">
+          <div className="section-title">
+            <h2>{selectedAgent.name}</h2>
+            <span>ينفذ إجراءات</span>
+          </div>
+
+          <p>{selectedAgent.promise}</p>
+
+          <div className="chips">
+            {selectedAgent.examples.map((item) => (
+              <button key={item} onClick={() => setPrompt(item)}>
+                {item}
+              </button>
+            ))}
+          </div>
+
+          <textarea
+            value={prompt}
+            onChange={(event) => setPrompt(event.target.value)}
+            placeholder="اطلب من الوكيل قرار وتنفيذ..."
+          />
+
+          <button className="primary" disabled={busy} onClick={askAgent}>
+            {busy ? 'جاري الإنشاء والتنفيذ...' : 'نفّذ تلقائيًا'}
+          </button>
+
+          {error && <div className="error">{error}</div>}
+        </div>
+
+        <div className="panel result">
+          <div className="section-title">
+            <h2>قرار الوكيل</h2>
+            <span>{actions.length} إجراء</span>
+          </div>
+
+          <pre>
+            {result || 'اكتب طلبك، وسيحوّله الوكيل إلى إجراءات تنفيذية وينفذها تلقائيًا.'}
+          </pre>
+
+          {hasPendingActions && (
+            <button className="primary" onClick={executeAll}>
+              نفّذ كل الإجراءات
+            </button>
+          )}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="section-title">
+          <h2>إجراءات قابلة للتنفيذ</h2>
+          <span>Tasks / Gmail / Sheets / Calendar</span>
+        </div>
+
+        <div className="action-list">
+          {actions.map((action) => (
+            <article
+              key={action.id}
+              className={action.executed ? 'done action-card' : 'action-card'}
+            >
+              <div>
+                <b>{action.title}</b>
+                <p>{action.description}</p>
+                <small>
+                  {action.type} · {action.dueDate || 'بدون تاريخ'} · {action.priority || 'medium'}
+                </small>
+              </div>
+
+              <button
+                disabled={action.executed}
+                onClick={() => executeAction(action)}
+              >
+                {action.executed ? 'تم' : 'نفّذ'}
+              </button>
+            </article>
+          ))}
+
+          {!actions.length && <small>لا توجد إجراءات بعد.</small>}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="section-title">
+          <h2>سياق من نظامك</h2>
+          <span>ذاكرة محلية</span>
+        </div>
+
+        <div className="task-list">
+          {openTasks.map((task: Task) => (
+            <div key={task.id} className="task-row">
+              <b>{task.title}</b>
+              <small>
+                {task.dueDate || 'بدون تاريخ'} · {task.priority}
+              </small>
+            </div>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+const styles = `:root{color-scheme:dark;font-family:Cairo,-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif;background:#050816}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,rgba(37,99,235,.35),transparent 34%),radial-gradient(circle at 90% 8%,rgba(124,58,237,.32),transparent 30%),#050816;color:#f8fafc}.agents-shell{max-width:1180px;margin:auto;padding:18px 14px 90px}.hero-card,.panel,.agent-tile{border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.04));border-radius:34px;box-shadow:0 24px 80px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(18px)}.hero-card{padding:26px;text-align:center;display:grid;gap:12px;position:relative;overflow:hidden}.hero-card:before{content:"";position:absolute;inset:-120px 25% auto;width:380px;height:380px;border-radius:999px;background:rgba(6,182,212,.18);filter:blur(55px)}.back,.hub{position:relative;color:#bfdbfe;text-decoration:none}.back{justify-self:start}.hub{position:absolute;left:24px;top:24px}.eyebrow{color:#67e8f9;letter-spacing:.24em;text-transform:uppercase;font-size:12px}.hero-card h1{position:relative;font-size:clamp(42px,10vw,82px);letter-spacing:-.05em;margin:0}.hero-card p{position:relative;max-width:800px;margin:auto;color:#cbd5e1;line-height:1.9}.status-pill{position:relative;display:inline-flex;justify-self:center;padding:11px 18px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.28);color:#bbf7d0}.agent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}.agent-tile{padding:16px;text-align:right;color:#fff;display:grid;gap:9px;min-height:150px;transition:.2s ease}.agent-tile:hover{transform:translateY(-4px);border-color:rgba(103,232,249,.45)}.agent-tile b{font-size:24px;color:#67e8f9}.agent-tile strong{font-size:17px}.agent-tile small,.panel p,.task-row small,.action-card small{color:#cbd5e1;line-height:1.55}.agent-tile.active{outline:2px solid rgba(103,232,249,.8);background:linear-gradient(145deg,rgba(37,99,235,.36),rgba(124,58,237,.2))}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{padding:20px;margin-top:16px}.section-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.section-title h2{margin:0}.section-title span{color:#94a3b8}.chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.chips button,.action-card button{border:0;color:#bfdbfe;background:rgba(59,130,246,.16);border-radius:999px;padding:10px 13px;font-weight:800}textarea{width:100%;min-height:155px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(15,23,42,.72);color:#fff;padding:16px;font:inherit;line-height:1.7;outline:none}.primary{margin-top:12px;width:100%;min-height:54px;border:0;border-radius:22px;background:linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed);color:white;font-weight:950;display:grid;place-items:center;box-shadow:0 16px 45px rgba(37,99,235,.28)}.primary:disabled{opacity:.65}.error{margin-top:12px;border-radius:18px;background:rgba(239,68,68,.16);color:#fecaca;padding:12px}.result pre{white-space:pre-wrap;font-family:inherit;line-height:1.9;color:#e5e7eb;min-height:250px;margin:0}.action-list,.task-list{display:grid;gap:10px}.action-card{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid rgba(255,255,255,.1);background:rgba(15,23,42,.6);padding:14px;border-radius:20px}.action-card.done{border-color:rgba(34,197,94,.5);background:rgba(22,101,52,.18)}.action-card div{display:grid;gap:5px}.action-card p{margin:0}.action-card button{min-width:95px;color:#fff;background:linear-gradient(135deg,#2563eb,#7c3aed);border-radius:16px}.action-card button:disabled{opacity:.8;cursor:not-allowed}.task-row{display:grid;gap:4px;border:1px solid rgba(255,255,255,.1);background:rgba(15,23,42,.62);padding:14px;border-radius:18px}@media(max-width:760px){.agents-shell{padding:12px 10px 70px}.workspace{grid-template-columns:1fr}.agent-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.agent-tile{min-height:142px;padding:13px}.hub{position:static;justify-self:start}.action-card{align-items:stretch;flex-direction:column}.action-card button{width:100%;min-height:46px}}`;
