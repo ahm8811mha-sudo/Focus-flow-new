@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocalMemory } from '@/hooks/useLocalMemory';
 import { getStoredDriveToken } from '@/lib/googleDriveCloud';
+import { motion } from 'framer-motion';
+import { Sparkles, Terminal, CheckCircle2, AlertCircle, LayoutGrid, BrainCircuit, Calendar, FolderKanban } from 'lucide-react';
 
 function today() { return new Date().toISOString().slice(0, 10); }
 
 const modules = [
-  { title: 'الوكلاء', href: '/agents', tag: 'AI Command', desc: 'القائد العام يحول الطلب إلى إجراءات قابلة للتنفيذ.' },
-  { title: 'المهام', href: '/focus', tag: 'Execution', desc: 'إضافة وتعديل ومتابعة المهام والمشاريع.' },
-  { title: 'النظام', href: '/system', tag: 'Control', desc: 'Gemini و Google Drive و Gmail و Calendar و Sheets.' },
-  { title: 'المشاريع', href: '/projects', tag: 'Projects', desc: 'متابعة التقدم والتكاليف والخطوات.' },
+  { title: 'الوكلاء', href: '/agents', tag: 'AI Command', desc: 'القائد العام يحول الطلب إلى إجراءات قابلة للتنفيذ.', icon: BrainCircuit },
+  { title: 'المهام', href: '/focus', tag: 'Execution', desc: 'إضافة وتعديل ومتابعة المهام والمشاريع.', icon: CheckCircle2 },
+  { title: 'النظام', href: '/system', tag: 'Control', desc: 'Gemini و Google Drive و Gmail و Calendar.', icon: LayoutGrid },
+  { title: 'المشاريع', href: '/projects', tag: 'Projects', desc: 'متابعة التقدم والتكاليف والخطوات.', icon: FolderKanban },
 ];
 
 export default function FocusFlowOS() {
@@ -27,80 +29,137 @@ export default function FocusFlowOS() {
   const urgent = useMemo(() => memory.tasks.filter((task) => task.status !== 'done' && (task.priority === 'urgent' || task.priority === 'high')), [memory.tasks]);
   const topTasks = useMemo(() => memory.tasks.filter((task) => task.status !== 'done').slice(0, 5), [memory.tasks]);
 
-  return (
-    <main className="pro-shell" dir="rtl">
-      <style>{styles}</style>
-      <div className="orb orb-a" />
-      <div className="orb orb-b" />
+  const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+  const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } };
 
-      <aside className="side-rail">
-        <div className="logo">FF</div>
-        <a href="/agents">AI</a>
-        <a href="/focus">Tasks</a>
-        <a href="/system">System</a>
-        <a href="/calendar">Cal</a>
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-[#020202] text-slate-200 p-4 md:p-8 lg:pr-[110px] pb-24 lg:pb-8 font-sans" dir="rtl">
+      <div className="absolute top-0 right-0 w-full h-full bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none" />
+      <div className="absolute top-[-10%] right-[10%] w-[400px] h-[400px] bg-cyan-600/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[350px] h-[350px] bg-violet-600/20 rounded-full blur-[120px] pointer-events-none" />
+
+      <aside className="hidden lg:flex fixed right-6 top-6 bottom-6 w-[72px] flex-col gap-4 p-3 border border-white/10 bg-[#0a0a0a]/60 backdrop-blur-2xl rounded-3xl shadow-[0_24px_80px_rgba(0,0,0,0.4)] z-50">
+        <div className="h-12 w-full rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-600 to-violet-600 flex items-center justify-center font-black text-white text-lg shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+          FF
+        </div>
+        <div className="flex flex-col gap-3 mt-4">
+          <a href="/agents" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">AI</a>
+          <a href="/focus" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Tasks</a>
+          <a href="/system" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Sys</a>
+          <a href="/calendar" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Cal</a>
+        </div>
       </aside>
 
-      <section className="hero-pro">
-        <div className="hero-copy">
-          <span className="eyebrow">FOCUS FLOW / GEMINI OPERATING SYSTEM</span>
-          <h1>نظام تنفيذ ذكي، مو مجرد قائمة مهام.</h1>
-          <p>واجهة مركزية للوكلاء، المهام، المشاريع، التقويم، وخدمات Google بتصميم زجاجي احترافي.</p>
-          <div className="hero-actions">
-            <a className="primary" href="/agents">تشغيل الوكلاء</a>
-            <a className="secondary" href="/focus">فتح المهام</a>
+      <motion.div variants={container} initial="hidden" animate="show" className="max-w-[1200px] mx-auto space-y-6 relative z-10">
+        <motion.section variants={item} className="relative overflow-hidden flex flex-col lg:flex-row gap-8 lg:gap-12 p-8 lg:p-12 border border-white/10 bg-gradient-to-br from-[#0a0a0a]/80 to-white/[0.02] backdrop-blur-2xl rounded-[40px] shadow-[0_28px_90px_rgba(0,0,0,0.4)]">
+          <div className="flex-1 flex flex-col justify-center gap-6">
+            <span className="text-cyan-400 tracking-[0.2em] text-xs font-black uppercase flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> FOCUS FLOW / GEMINI OPERATING SYSTEM
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-[4rem] leading-[1.1] font-bold text-white tracking-tight">
+              نظام تنفيذ ذكي،<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">
+                مو مجرد قائمة مهام.
+              </span>
+            </h1>
+            <p className="text-white/60 text-lg md:text-xl max-w-2xl leading-relaxed">
+              واجهة مركزية للوكلاء، المهام، المشاريع، التقويم، وخدمات Google بتصميم زجاجي احترافي.
+            </p>
+            <div className="flex flex-wrap gap-4 mt-2">
+              <a href="/agents" className="h-14 px-8 rounded-2xl flex items-center justify-center text-white font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-[0_10px_30px_rgba(37,99,235,0.4)] transition-all hover:scale-105">
+                تشغيل الوكلاء
+              </a>
+              <a href="/focus" className="h-14 px-8 rounded-2xl flex items-center justify-center text-white font-bold bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105">
+                فتح المهام
+              </a>
+            </div>
           </div>
-        </div>
-        <div className="ai-card">
-          <span>AI STATUS</span>
-          <strong>{geminiReady ? 'Gemini متصل' : 'Gemini غير مفعل'}</strong>
-          <small>{geminiReady ? 'الوكلاء جاهزون لاتخاذ القرار' : 'أضف GEMINI_API_KEY في Vercel'}</small>
-          <div className="pulse" />
-        </div>
-      </section>
 
-      <section className="metrics-grid">
-        <div className="metric"><span>Google</span><strong>{googleReady ? 'متصل' : 'غير مربوط'}</strong><small>Drive / Gmail / Calendar / Sheets</small></div>
-        <div className="metric"><span>المهام</span><strong>{memory.tasks.length}</strong><small>{urgent.length} عالية أو عاجلة</small></div>
-        <div className="metric"><span>المتأخر</span><strong>{overdue.length}</strong><small>تحتاج تدخل اليوم</small></div>
-        <div className="metric"><span>المشاريع</span><strong>{memory.projects.length}</strong><small>قيد المتابعة</small></div>
-      </section>
-
-      <section className="bento-grid">
-        <article className="panel command">
-          <div className="section-title"><span>COMMAND CENTER</span><a href="/agents">فتح</a></div>
-          <h2>اطلب قرار، وخله يتحول إلى تنفيذ.</h2>
-          <p>مثال: رتب يومي، حدد أهم 3 إجراءات، أنشئ المهام، وجهز رسالة متابعة.</p>
-          <div className="prompt-preview">رتب يومي وابدأ بالأكثر تأثيرًا.</div>
-        </article>
-
-        <article className="panel tasks-panel">
-          <div className="section-title"><span>ACTIVE TASKS</span><a href="/focus">إدارة</a></div>
-          <div className="task-list">
-            {topTasks.map((task) => <div className="task-row" key={task.id}><b>{task.title}</b><small>{task.dueDate || 'بدون تاريخ'} · {task.priority}</small></div>)}
-            {!topTasks.length && <small>لا توجد مهام مفتوحة.</small>}
+          <div className="relative w-full lg:w-[320px] shrink-0 p-8 rounded-[32px] bg-black/40 border border-white/10 flex flex-col justify-between overflow-hidden group">
+            <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-green-500/20 blur-[40px] rounded-full group-hover:bg-green-500/30 transition-colors" />
+            <span className="text-cyan-400 text-xs font-black tracking-widest uppercase">AI Status</span>
+            <div className="mt-8 mb-4">
+              <strong className="text-3xl md:text-4xl font-bold text-white block mb-2">{geminiReady ? 'Gemini متصل' : 'غير مفعل'}</strong>
+              <small className="text-white/50 text-sm">{geminiReady ? 'الوكلاء جاهزون لاتخاذ القرار والتحليل' : 'أضف GEMINI_API_KEY في إعدادات الخادم'}</small>
+            </div>
+            <div className={`w-4 h-4 rounded-full mt-auto shadow-[0_0_20px_rgba(0,0,0,0.5)] ${geminiReady ? 'bg-green-500 animate-pulse shadow-green-500/50' : 'bg-orange-500'}`} />
           </div>
-        </article>
+        </motion.section>
 
-        {modules.map((module) => (
-          <a className="module-card" href={module.href} key={module.href}>
-            <span>{module.tag}</span>
-            <strong>{module.title}</strong>
-            <small>{module.desc}</small>
-          </a>
-        ))}
-      </section>
+        <motion.section variants={item} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: 'Google', value: googleReady ? 'متصل' : 'غير مربوط', sub: 'Drive / Gmail / Calendar', icon: LayoutGrid },
+            { label: 'المهام', value: memory.tasks.length, sub: `${urgent.length} عالية أو عاجلة`, icon: CheckCircle2 },
+            { label: 'المتأخر', value: overdue.length, sub: 'تحتاج تدخل اليوم', icon: AlertCircle, alert: overdue.length > 0 },
+            { label: 'المشاريع', value: memory.projects.length, sub: 'قيد المتابعة والتنفيذ', icon: FolderKanban },
+          ].map((metric, i) => (
+            <div key={i} className="p-6 rounded-3xl border border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl hover:bg-white/[0.04] transition-colors flex flex-col gap-2 relative overflow-hidden group">
+              <div className="flex justify-between items-start">
+                <span className="text-cyan-400 text-[11px] font-black tracking-widest uppercase">{metric.label}</span>
+                <metric.icon className={`w-5 h-5 ${metric.alert ? 'text-rose-400' : 'text-white/30 group-hover:text-cyan-400'} transition-colors`} />
+              </div>
+              <strong className={`text-3xl md:text-4xl font-bold mt-2 ${metric.alert ? 'text-rose-400' : 'text-white'}`}>{metric.value}</strong>
+              <small className="text-white/50 text-sm mt-auto pt-2">{metric.sub}</small>
+            </div>
+          ))}
+        </motion.section>
 
-      <nav className="mobile-nav">
-        <a href="/agents">الوكلاء</a>
-        <a href="/focus">المهام</a>
-        <a href="/system">النظام</a>
-        <a href="/calendar">التقويم</a>
+        <motion.section variants={item} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <article className="lg:col-span-2 p-8 rounded-[32px] border border-white/10 bg-gradient-to-br from-indigo-500/10 to-purple-500/5 backdrop-blur-xl flex flex-col h-full hover:border-indigo-500/30 transition-colors">
+            <div className="flex items-center justify-between mb-8">
+              <span className="text-cyan-400 text-xs font-black tracking-widest uppercase">Command Center</span>
+              <a href="/agents" className="px-4 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold hover:bg-indigo-500/30 transition-colors">فتح الوحدة</a>
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-3">اطلب قرار، وخله يتحول لتنفيذ.</h2>
+            <p className="text-white/60 text-lg mb-8 max-w-xl">مثال: رتب يومي، حدد أهم 3 إجراءات، أنشئ المهام، وجهز رسالة متابعة للعميل.</p>
+            <div className="mt-auto p-5 rounded-2xl bg-[#050505]/80 border border-white/5 text-white/80 font-medium flex items-center gap-3 shadow-inner">
+              <Terminal className="w-5 h-5 text-indigo-400" />
+              رتب يومي وابدأ بالأكثر تأثيرًا...
+              <span className="w-2 h-5 bg-indigo-500 animate-pulse ml-auto" />
+            </div>
+          </article>
+
+          <article className="p-8 rounded-[32px] border border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl flex flex-col h-full">
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-cyan-400 text-xs font-black tracking-widest uppercase">Active Tasks</span>
+              <a href="/focus" className="px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold hover:bg-cyan-500/30 transition-colors">إدارة</a>
+            </div>
+            <div className="flex flex-col gap-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+              {topTasks.map((task) => (
+                <div key={task.id} className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group">
+                  <strong className="text-white text-sm block mb-1 group-hover:text-cyan-300 transition-colors">{task.title}</strong>
+                  <small className="text-white/40 text-xs flex items-center gap-2">
+                    <Calendar className="w-3 h-3" /> {task.dueDate || 'بدون تاريخ'} <span className="w-1 h-1 rounded-full bg-white/20 mx-1" /> {task.priority}
+                  </small>
+                </div>
+              ))}
+              {!topTasks.length && (
+                <div className="flex-1 flex items-center justify-center text-white/40 text-sm">لا توجد مهام مفتوحة حالياً.</div>
+              )}
+            </div>
+          </article>
+
+          {modules.map((module) => (
+            <a key={module.href} href={module.href} className="p-8 rounded-[32px] border border-white/10 bg-[#0a0a0a]/40 backdrop-blur-xl hover:bg-white/[0.04] hover:border-cyan-500/30 transition-all hover:-translate-y-1 group flex flex-col">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-xl bg-white/5 text-white/50 group-hover:text-cyan-400 group-hover:bg-cyan-500/10 transition-colors">
+                  <module.icon className="w-6 h-6" />
+                </div>
+                <span className="text-cyan-400/80 text-[10px] font-black tracking-widest uppercase">{module.tag}</span>
+              </div>
+              <strong className="text-2xl font-bold text-white mb-2">{module.title}</strong>
+              <small className="text-white/50 text-sm leading-relaxed mt-auto">{module.desc}</small>
+            </a>
+          ))}
+        </motion.section>
+      </motion.div>
+
+      <nav className="lg:hidden fixed bottom-6 left-4 right-4 p-2 rounded-3xl border border-white/10 bg-[#0a0a0a]/90 backdrop-blur-2xl shadow-2xl z-50 flex gap-2">
+        <a href="/agents" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-sm font-bold active:scale-95 transition-transform">الوكلاء</a>
+        <a href="/focus" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-sm font-bold active:scale-95 transition-transform">المهام</a>
+        <a href="/system" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-sm font-bold active:scale-95 transition-transform">النظام</a>
+        <a href="/calendar" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-sm font-bold active:scale-95 transition-transform">التقويم</a>
       </nav>
     </main>
   );
 }
-
-const styles = `
-:root{color-scheme:dark;font-family:Cairo,-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif;background:#030712}*{box-sizing:border-box}body{margin:0;background:#030712;color:#f8fafc}.pro-shell{position:relative;min-height:100vh;overflow:hidden;padding:24px 24px 110px 108px;background:radial-gradient(circle at 15% 5%,rgba(6,182,212,.28),transparent 28%),radial-gradient(circle at 80% 0%,rgba(124,58,237,.34),transparent 34%),linear-gradient(135deg,#030712,#08111f 55%,#020617)}.orb{position:fixed;border-radius:999px;filter:blur(70px);pointer-events:none;opacity:.65}.orb-a{width:340px;height:340px;background:#2563eb;right:-120px;top:90px}.orb-b{width:260px;height:260px;background:#7c3aed;left:-80px;bottom:120px}.side-rail{position:fixed;right:22px;top:22px;bottom:22px;width:68px;border:1px solid rgba(255,255,255,.14);border-radius:30px;background:rgba(15,23,42,.58);backdrop-filter:blur(22px);display:grid;align-content:start;gap:12px;padding:12px;z-index:10;box-shadow:0 24px 80px rgba(0,0,0,.38)}.logo{height:46px;border-radius:18px;background:linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed);display:grid;place-items:center;font-weight:950;letter-spacing:-.08em}.side-rail a{height:46px;border-radius:18px;display:grid;place-items:center;text-decoration:none;color:#cbd5e1;background:rgba(255,255,255,.05);font-size:11px;font-weight:900}.hero-pro,.panel,.metric,.module-card,.ai-card{border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.045));backdrop-filter:blur(22px);box-shadow:0 28px 90px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.08)}.hero-pro{max-width:1180px;margin:0 auto;border-radius:42px;padding:34px;display:grid;grid-template-columns:1.4fr .75fr;gap:22px;align-items:stretch;min-height:360px}.hero-copy{display:grid;align-content:center;gap:18px}.eyebrow{color:#67e8f9;letter-spacing:.24em;font-size:12px;font-weight:900}.hero-pro h1{font-size:clamp(44px,8vw,92px);line-height:.98;letter-spacing:-.07em;margin:0;max-width:820px}.hero-pro p{color:#cbd5e1;line-height:1.9;font-size:18px;max-width:720px;margin:0}.hero-actions{display:flex;gap:12px;flex-wrap:wrap}.primary,.secondary{min-height:54px;border-radius:20px;padding:0 22px;display:grid;place-items:center;text-decoration:none;color:#fff;font-weight:950}.primary{background:linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed);box-shadow:0 18px 55px rgba(37,99,235,.34)}.secondary{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12)}.ai-card{border-radius:34px;padding:24px;display:grid;align-content:space-between;position:relative;overflow:hidden}.ai-card:before{content:"";position:absolute;inset:auto -60px -70px auto;width:220px;height:220px;border-radius:999px;background:rgba(34,197,94,.25);filter:blur(28px)}.ai-card span,.metric span,.module-card span,.section-title span{color:#67e8f9;font-size:12px;letter-spacing:.12em;font-weight:950}.ai-card strong{font-size:38px;line-height:1.2;position:relative}.ai-card small,.metric small,.module-card small,.task-row small,.panel p{color:#cbd5e1;line-height:1.7}.pulse{width:16px;height:16px;border-radius:999px;background:#22c55e;box-shadow:0 0 0 10px rgba(34,197,94,.15);position:relative}.metrics-grid{max-width:1180px;margin:16px auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.metric{border-radius:28px;padding:18px;display:grid;gap:8px}.metric strong{font-size:30px}.bento-grid{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1.2fr .8fr repeat(2,.65fr);gap:14px}.panel,.module-card{border-radius:30px;padding:20px;text-decoration:none;color:#fff;min-height:190px}.command{grid-column:span 2;min-height:260px}.tasks-panel{grid-row:span 2}.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.section-title a{color:#bfdbfe;text-decoration:none;background:rgba(59,130,246,.18);border-radius:999px;padding:8px 12px;font-weight:900}.panel h2{font-size:34px;line-height:1.2;margin:0 0 12px}.prompt-preview{margin-top:18px;border:1px solid rgba(255,255,255,.12);background:rgba(15,23,42,.72);border-radius:24px;padding:20px;color:#e5e7eb;font-size:22px}.task-list{display:grid;gap:10px}.task-row{border:1px solid rgba(255,255,255,.1);background:rgba(15,23,42,.58);border-radius:18px;padding:13px;display:grid;gap:4px}.module-card{display:grid;align-content:space-between;transition:.22s ease}.module-card:hover{transform:translateY(-6px);border-color:rgba(103,232,249,.42)}.module-card strong{font-size:28px}.mobile-nav{display:none}@media(max-width:900px){.pro-shell{padding:12px 10px 92px}.side-rail{display:none}.hero-pro{grid-template-columns:1fr;border-radius:34px;padding:24px;min-height:auto}.hero-pro h1{font-size:46px}.metrics-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bento-grid{grid-template-columns:1fr}.command,.tasks-panel{grid-column:auto;grid-row:auto}.mobile-nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:8px;border:1px solid rgba(255,255,255,.14);background:rgba(15,23,42,.9);backdrop-filter:blur(22px);border-radius:24px;padding:10px;z-index:20}.mobile-nav a{min-height:48px;border-radius:17px;display:grid;place-items:center;text-decoration:none;color:#fff;background:rgba(59,130,246,.18);font-weight:900;font-size:13px}}
-`;
