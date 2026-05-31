@@ -53,7 +53,92 @@ export default function PersonalAgentsPage() {
       if (!response.ok || !data.ok) throw new Error(data.message || 'فشل تشغيل الوكيل');
       const text = data.plan?.guidance || data.plan?.summary || data.text || '';
       const serverActions = Array.isArray(data.plan?.actions) ? data.plan.actions : null;
-      const nextActions = serverActions ? serverActions.map((a: any) => ({ id: uid(), type: normalizeType(a.type || 'create_task'), title: a.title || 'إجراء', description: a.description || text, dueDate: a.dueDate || '', dueTime: a.dueTime || '', priority: a.priority || 'medium', payload: a.payload || {} })) : parseActions(data.text || text, selectedAgent, prompt);
+     let nextActions = serverActions
+  ? serverActions.map((a: any) => ({
+      id: uid(),
+      type: normalizeType(a.type || 'create_task'),
+      title: a.title || 'إجراء',
+      description: a.description || text,
+      dueDate: a.dueDate || '',
+      dueTime: a.dueTime || '',
+      priority: a.priority || 'medium',
+      payload: a.payload || {},
+    }))
+  : parseActions(data.text || text, selectedAgent, prompt);
+
+if (
+  nextActions.length === 1 &&
+  nextActions[0].type === 'create_note'
+) {
+  nextActions = [
+    {
+      id: uid(),
+      type: 'create_task',
+      title: 'تحديد المطلوب وتجهيز التنفيذ',
+      description: prompt,
+      dueDate: today(),
+      dueTime: '09:00',
+      priority: 'high',
+      payload: {},
+    },
+    {
+      id: uid(),
+      type: 'create_task',
+      title: 'جمع البيانات المطلوبة',
+      description: 'اجمع كل البيانات اللازمة لتنفيذ الطلب ورتبها.',
+      dueDate: today(),
+      dueTime: '11:00',
+      priority: 'high',
+      payload: {},
+    },
+    {
+      id: uid(),
+      type: 'csv_file',
+      title: 'جدول متابعة التنفيذ',
+      description: 'جدول لتتبع البنود والحالة والملاحظات والنتائج.',
+      dueDate: today(),
+      dueTime: '',
+      priority: 'medium',
+      payload: {
+        columns: ['البند', 'الحالة', 'الموعد', 'الملاحظات'],
+        rows: [],
+      },
+    },
+    {
+      id: uid(),
+      type: 'calendar_file',
+      title: 'تذكير متابعة التنفيذ',
+      description: 'راجع التنفيذ واستكمل البنود المتبقية.',
+      dueDate: today(),
+      dueTime: '15:00',
+      priority: 'high',
+      payload: {},
+    },
+    {
+      id: uid(),
+      type: 'create_task',
+      title: 'توثيق النتائج والخطوة التالية',
+      description: 'سجل ما تم إنجازه وحدد المتابعة التالية.',
+      dueDate: today(),
+      dueTime: '16:00',
+      priority: 'medium',
+      payload: {},
+    },
+  ];
+}
+
+const executedActions = [];
+
+for (const action of nextActions) {
+  await executeAction(action);
+  executedActions.push({
+    ...action,
+    executed: true,
+  });
+}
+
+setResult(text || data.text || 'تم إنشاء وتنفيذ الإجراءات تلقائيًا.');
+setActions(executedActions);
       setResult(text || data.text || 'تم توليد إجراءات تنفيذية.'); setActions(nextActions);
     } catch (err) { setError(err instanceof Error ? err.message : 'حدث خطأ غير معروف'); }
     finally { setBusy(false); }
