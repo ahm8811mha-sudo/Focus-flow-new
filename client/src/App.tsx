@@ -20,7 +20,7 @@ import { Home3D } from "./pages/Home3D";
 import LocalFocusFlow from "./pages/LocalFocusFlow";
 import TaskCenterPage from "./pages/TaskCenterPage";
 import PersonalAgentsPage from "./pages/PersonalAgentsPage";
-import ExecutionAgentsPage from "./pages/ExecutionAgentsPage";
+import ExecutionAgentsPage from "./pages/ExecutionAgentsPageV2";
 import SystemHubPage from "./pages/SystemHubPage";
 import FocusFlowOS from "./pages/FocusFlowOS";
 import DirectoryPage from "./pages/DirectoryPage";
