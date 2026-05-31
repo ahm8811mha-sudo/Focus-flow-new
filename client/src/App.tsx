@@ -32,7 +32,7 @@ function Router() {
   return (
     <Switch>
       <Route path={"/"} component={FocusFlowOS} />
-      <Route path={"/focus"} component={ProTasksRoute} />
+      <Route path={"/focus"} component={FocusFlowOS} />
       <Route path={"/local"} component={LocalFocusFlow} />
       <Route path={"/agents"} component={PersonalAgentsPage} />
       <Route path={"/personal-agents"} component={PersonalAgentsPage} />
@@ -41,62 +41,14 @@ function Router() {
       <Route path={"/home-3d"} component={Home3D} />
       <Route path={"/classic"} component={Home} />
       <Route path={"/tasks"} component={ProTasksRoute} />
-      <Route path={"/calendar"}>
-        {() => (
-          <DashboardLayout>
-            <CalendarPage />
-          </DashboardLayout>
-        )}
-      </Route>
-      <Route path={"/kanban"}>
-        {() => (
-          <DashboardLayout>
-            <KanbanPage />
-          </DashboardLayout>
-        )}
-      </Route>
-      <Route path={"/notes"}>
-        {() => (
-          <DashboardLayout>
-            <NotesPage />
-          </DashboardLayout>
-        )}
-      </Route>
-      <Route path={"/projects"}>
-        {() => (
-          <DashboardLayout>
-            <ProjectsPage />
-          </DashboardLayout>
-        )}
-      </Route>
-      <Route path={"/projects/:projectId"}>
-        {() => (
-          <DashboardLayout>
-            <ProjectDetailPage />
-          </DashboardLayout>
-        )}
-      </Route>
-      <Route path={"/statistics"}>
-        {() => (
-          <DashboardLayout>
-            <StatisticsPage />
-          </DashboardLayout>
-        )}
-      </Route>
-      <Route path={"/settings"}>
-        {() => (
-          <DashboardLayout>
-            <SettingsPage />
-          </DashboardLayout>
-        )}
-      </Route>
-      <Route path={"/search"}>
-        {() => (
-          <DashboardLayout>
-            <SearchPage />
-          </DashboardLayout>
-        )}
-      </Route>
+      <Route path={"/calendar"}>{() => (<DashboardLayout><CalendarPage /></DashboardLayout>)}</Route>
+      <Route path={"/kanban"}>{() => (<DashboardLayout><KanbanPage /></DashboardLayout>)}</Route>
+      <Route path={"/notes"}>{() => (<DashboardLayout><NotesPage /></DashboardLayout>)}</Route>
+      <Route path={"/projects"}>{() => (<DashboardLayout><ProjectsPage /></DashboardLayout>)}</Route>
+      <Route path={"/projects/:projectId"}>{() => (<DashboardLayout><ProjectDetailPage /></DashboardLayout>)}</Route>
+      <Route path={"/statistics"}>{() => (<DashboardLayout><StatisticsPage /></DashboardLayout>)}</Route>
+      <Route path={"/settings"}>{() => (<DashboardLayout><SettingsPage /></DashboardLayout>)}</Route>
+      <Route path={"/search"}>{() => (<DashboardLayout><SearchPage /></DashboardLayout>)}</Route>
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
