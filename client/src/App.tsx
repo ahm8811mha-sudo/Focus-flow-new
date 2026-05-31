@@ -22,24 +22,25 @@ import PersonalAgentsPage from "./pages/PersonalAgentsPage";
 import SystemHubPage from "./pages/SystemHubPage";
 import FocusFlowOS from "./pages/FocusFlowOS";
 
+const ProTasksRoute = () => (
+  <DashboardLayout>
+    <TasksPage />
+  </DashboardLayout>
+);
+
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={FocusFlowOS} />
-      <Route path={"/focus"} component={LocalFocusFlow} />
+      <Route path={"/focus"} component={ProTasksRoute} />
+      <Route path={"/local"} component={LocalFocusFlow} />
       <Route path={"/agents"} component={PersonalAgentsPage} />
       <Route path={"/personal-agents"} component={PersonalAgentsPage} />
       <Route path={"/system"} component={SystemHubPage} />
       <Route path={"/hub"} component={SystemHubPage} />
       <Route path={"/home-3d"} component={Home3D} />
       <Route path={"/classic"} component={Home} />
-      <Route path={"/tasks"}>
-        {() => (
-          <DashboardLayout>
-            <TasksPage />
-          </DashboardLayout>
-        )}
-      </Route>
+      <Route path={"/tasks"} component={ProTasksRoute} />
       <Route path={"/calendar"}>
         {() => (
           <DashboardLayout>
