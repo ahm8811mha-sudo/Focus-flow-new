@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocalMemory } from '@/hooks/useLocalMemory';
 import { getStoredDriveToken } from '@/lib/googleDriveCloud';
 import { motion } from 'framer-motion';
-import { Sparkles, Terminal, CheckCircle2, AlertCircle, LayoutGrid, BrainCircuit, Calendar, FolderKanban, Search, ClipboardList } from 'lucide-react';
+import { Sparkles, Terminal, CheckCircle2, AlertCircle, LayoutGrid, BrainCircuit, Calendar, FolderKanban, Search, ClipboardList, Table2 } from 'lucide-react';
 
 function today() { return new Date().toISOString().slice(0, 10); }
 
@@ -11,6 +11,7 @@ const modules = [
   { title: 'مركز المهام', href: '/tasks', tag: 'Tasks', desc: 'كل مهامك ومهام الوكلاء في صفحة واحدة واضحة.', icon: CheckCircle2 },
   { title: 'التقويم', href: '/calendar', tag: 'Calendar', desc: 'المواعيد والتنبيهات التي ينشئها الوكلاء حسب الوقت.', icon: Calendar },
   { title: 'الدليل', href: '/directory', tag: 'Directory', desc: 'جهات الاتصال والأرقام والبيانات التي يعتمد عليها الوكيل.', icon: Search },
+  { title: 'الجداول', href: '/tables', tag: 'Tables', desc: 'الجداول التي ينشئها الوكلاء تظهر داخل التطبيق قبل أي تصدير.', icon: Table2 },
   { title: 'سجل التنفيذ', href: '/execution', tag: 'Execution Log', desc: 'اعرف ماذا نفذ الوكيل، ما الذي فشل، وما الخطوة التالية.', icon: ClipboardList },
   { title: 'النظام', href: '/system', tag: 'Settings', desc: 'Gemini و Google Drive و Gmail و Calendar و Sheets.', icon: LayoutGrid },
   { title: 'المشاريع', href: '/projects', tag: 'Projects', desc: 'متابعة المشاريع والتكاليف والخطوات.', icon: FolderKanban },
@@ -48,6 +49,7 @@ export default function FocusFlowOS() {
           <a href="/tasks" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Tasks</a>
           <a href="/calendar" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Cal</a>
           <a href="/directory" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Dir</a>
+          <a href="/tables" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Tbl</a>
           <a href="/execution" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Log</a>
           <a href="/system" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Sys</a>
         </div>
@@ -58,7 +60,7 @@ export default function FocusFlowOS() {
           <div className="flex-1 flex flex-col justify-center gap-6">
             <span className="text-cyan-400 tracking-[0.2em] text-xs font-black uppercase flex items-center gap-2"><Sparkles className="w-4 h-4" /> PERSONAL AI EXECUTION OS</span>
             <h1 className="text-4xl md:text-5xl lg:text-[4rem] leading-[1.1] font-bold text-white tracking-tight">Focus Flow<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">مركز واحد للتنفيذ.</span></h1>
-            <p className="text-white/60 text-lg md:text-xl max-w-2xl leading-relaxed">بدل التنقل بين صفحات متفرقة: ابدأ من هنا للوكلاء، المهام، التقويم، الدليل، سجل التنفيذ، وإعدادات النظام.</p>
+            <p className="text-white/60 text-lg md:text-xl max-w-2xl leading-relaxed">بدل التنقل بين صفحات متفرقة: ابدأ من هنا للوكلاء، المهام، التقويم، الدليل، الجداول، سجل التنفيذ، وإعدادات النظام.</p>
             <div className="flex flex-wrap gap-4 mt-2">
               <a href="/agents" className="h-14 px-8 rounded-2xl flex items-center justify-center text-white font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-[0_10px_30px_rgba(37,99,235,0.4)] transition-all hover:scale-105">تشغيل الوكلاء</a>
               <a href="/tasks" className="h-14 px-8 rounded-2xl flex items-center justify-center text-white font-bold bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105">مركز المهام</a>
