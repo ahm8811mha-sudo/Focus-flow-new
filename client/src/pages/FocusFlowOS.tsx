@@ -2,16 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocalMemory } from '@/hooks/useLocalMemory';
 import { getStoredDriveToken } from '@/lib/googleDriveCloud';
 
-const modules = [
-  { title: 'الوكلاء التنفيذيون', icon: '🧠', href: '/agents', desc: 'القائد العام، السكرتير، Excel، الرسائل، الصور، الملابس، الأكل، المال، السفر، والتعلم.' },
-  { title: 'إدارة المهام', icon: '✅', href: '/focus', desc: 'إضافة وتعديل وحذف المهام، الكانبان، المشاريع، والملاحظات المحلية.' },
-  { title: 'مركز النظام', icon: '⚙️', href: '/system', desc: 'Gemini، Google Drive، Calendar، Gmail Drafts، Google Sheets، والنسخ السحابي.' },
-  { title: 'التقويم', icon: '📅', href: '/calendar', desc: 'عرض المواعيد والمهام المؤرخة وربطها لاحقًا بتقويم Google.' },
-  { title: 'المشاريع', icon: '📁', href: '/projects', desc: 'إدارة المشاريع ومتابعة الإنجاز والمهام المرتبطة.' },
-  { title: 'الملاحظات', icon: '📝', href: '/notes', desc: 'حفظ قرارات الوكلاء والملاحظات المهمة.' },
-];
-
 function today() { return new Date().toISOString().slice(0, 10); }
+
+const modules = [
+  { title: 'الوكلاء', href: '/agents', tag: 'AI Command', desc: 'القائد العام يحول الطلب إلى إجراءات قابلة للتنفيذ.' },
+  { title: 'المهام', href: '/focus', tag: 'Execution', desc: 'إضافة وتعديل ومتابعة المهام والمشاريع.' },
+  { title: 'النظام', href: '/system', tag: 'Control', desc: 'Gemini و Google Drive و Gmail و Calendar و Sheets.' },
+  { title: 'المشاريع', href: '/projects', tag: 'Projects', desc: 'متابعة التقدم والتكاليف والخطوات.' },
+];
 
 export default function FocusFlowOS() {
   const memory = useLocalMemory();
@@ -27,23 +25,82 @@ export default function FocusFlowOS() {
 
   const overdue = useMemo(() => memory.tasks.filter((task) => task.dueDate && task.dueDate < today() && task.status !== 'done'), [memory.tasks]);
   const urgent = useMemo(() => memory.tasks.filter((task) => task.status !== 'done' && (task.priority === 'urgent' || task.priority === 'high')), [memory.tasks]);
-  const topTasks = useMemo(() => memory.tasks.filter((task) => task.status !== 'done').slice(0, 4), [memory.tasks]);
+  const topTasks = useMemo(() => memory.tasks.filter((task) => task.status !== 'done').slice(0, 5), [memory.tasks]);
 
   return (
-    <main className="os-shell" dir="rtl">
+    <main className="pro-shell" dir="rtl">
       <style>{styles}</style>
-      <header className="hero"><div className="brand">F</div><span className="eyebrow">Personal AI Execution OS</span><h1>Focus Flow OS</h1><p>النظام الموحد للوكلاء والمهام والتقويم والنسخ السحابي.</p><div className="hero-actions"><a className="primary" href="/agents">ابدأ من الوكلاء التنفيذيين</a><a className="secondary" href="/system">مركز النظام والخدمات</a></div></header>
-      <section className="status-grid">
-        <div className="status-card"><span>Gemini</span><strong>{geminiReady ? 'متصل' : 'غير مفعّل'}</strong><small>{geminiReady ? 'الوكلاء جاهزون للقرارات' : 'أضف GEMINI_API_KEY في Vercel'}</small></div>
-        <div className="status-card"><span>Google</span><strong>{googleReady ? 'متصل' : 'غير مربوط'}</strong><small>Drive / Calendar / Gmail / Sheets</small></div>
-        <div className="status-card"><span>المهام</span><strong>{memory.tasks.length}</strong><small>{urgent.length} عالية أو عاجلة</small></div>
-        <div className="status-card"><span>المتأخر</span><strong>{overdue.length}</strong><small>تحتاج قرار من الوكيل</small></div>
+      <div className="orb orb-a" />
+      <div className="orb orb-b" />
+
+      <aside className="side-rail">
+        <div className="logo">FF</div>
+        <a href="/agents">AI</a>
+        <a href="/focus">Tasks</a>
+        <a href="/system">System</a>
+        <a href="/calendar">Cal</a>
+      </aside>
+
+      <section className="hero-pro">
+        <div className="hero-copy">
+          <span className="eyebrow">FOCUS FLOW / GEMINI OPERATING SYSTEM</span>
+          <h1>نظام تنفيذ ذكي، مو مجرد قائمة مهام.</h1>
+          <p>واجهة مركزية للوكلاء، المهام، المشاريع، التقويم، وخدمات Google بتصميم زجاجي احترافي.</p>
+          <div className="hero-actions">
+            <a className="primary" href="/agents">تشغيل الوكلاء</a>
+            <a className="secondary" href="/focus">فتح المهام</a>
+          </div>
+        </div>
+        <div className="ai-card">
+          <span>AI STATUS</span>
+          <strong>{geminiReady ? 'Gemini متصل' : 'Gemini غير مفعل'}</strong>
+          <small>{geminiReady ? 'الوكلاء جاهزون لاتخاذ القرار' : 'أضف GEMINI_API_KEY في Vercel'}</small>
+          <div className="pulse" />
+        </div>
       </section>
-      <section className="main-grid"><article className="panel"><div className="section-title"><h2>أمر سريع للقائد العام</h2><a href="/agents">فتح مركز الأوامر</a></div><p>استخدم هذا المسار عندما تريد قرار وتنفيذ.</p><div className="prompt-box">رتب يومي، قرر أهم 3 إجراءات، ونفّذها داخل النظام.</div><a className="primary wide" href="/agents">تشغيل الوكلاء</a></article><article className="panel"><div className="section-title"><h2>أهم المهام المفتوحة</h2><a href="/focus">إدارة المهام</a></div><div className="task-list">{topTasks.map((task) => <div className="task-row" key={task.id}><b>{task.title}</b><small>{task.dueDate || 'بدون تاريخ'} · {task.priority}</small></div>)}{!topTasks.length && <small>لا توجد مهام مفتوحة.</small>}</div></article></section>
-      <section className="module-grid">{modules.map((module) => <a className="module-card" href={module.href} key={module.href}><b>{module.icon}</b><strong>{module.title}</strong><small>{module.desc}</small></a>)}</section>
-      <nav className="bottom-nav"><a href="/agents">الوكلاء</a><a href="/focus">المهام</a><a href="/system">النظام</a><a href="/calendar">التقويم</a></nav>
+
+      <section className="metrics-grid">
+        <div className="metric"><span>Google</span><strong>{googleReady ? 'متصل' : 'غير مربوط'}</strong><small>Drive / Gmail / Calendar / Sheets</small></div>
+        <div className="metric"><span>المهام</span><strong>{memory.tasks.length}</strong><small>{urgent.length} عالية أو عاجلة</small></div>
+        <div className="metric"><span>المتأخر</span><strong>{overdue.length}</strong><small>تحتاج تدخل اليوم</small></div>
+        <div className="metric"><span>المشاريع</span><strong>{memory.projects.length}</strong><small>قيد المتابعة</small></div>
+      </section>
+
+      <section className="bento-grid">
+        <article className="panel command">
+          <div className="section-title"><span>COMMAND CENTER</span><a href="/agents">فتح</a></div>
+          <h2>اطلب قرار، وخله يتحول إلى تنفيذ.</h2>
+          <p>مثال: رتب يومي، حدد أهم 3 إجراءات، أنشئ المهام، وجهز رسالة متابعة.</p>
+          <div className="prompt-preview">رتب يومي وابدأ بالأكثر تأثيرًا.</div>
+        </article>
+
+        <article className="panel tasks-panel">
+          <div className="section-title"><span>ACTIVE TASKS</span><a href="/focus">إدارة</a></div>
+          <div className="task-list">
+            {topTasks.map((task) => <div className="task-row" key={task.id}><b>{task.title}</b><small>{task.dueDate || 'بدون تاريخ'} · {task.priority}</small></div>)}
+            {!topTasks.length && <small>لا توجد مهام مفتوحة.</small>}
+          </div>
+        </article>
+
+        {modules.map((module) => (
+          <a className="module-card" href={module.href} key={module.href}>
+            <span>{module.tag}</span>
+            <strong>{module.title}</strong>
+            <small>{module.desc}</small>
+          </a>
+        ))}
+      </section>
+
+      <nav className="mobile-nav">
+        <a href="/agents">الوكلاء</a>
+        <a href="/focus">المهام</a>
+        <a href="/system">النظام</a>
+        <a href="/calendar">التقويم</a>
+      </nav>
     </main>
   );
 }
 
-const styles = `:root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif;background:#050816}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0%,#1e3a8a 0,#0b1020 45%,#030712 100%);color:#f8fafc}.os-shell{max-width:1120px;margin:0 auto;padding:18px 14px calc(100px + env(safe-area-inset-bottom))}.hero,.panel,.status-card,.module-card,.bottom-nav{border:1px solid rgba(255,255,255,.12);background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.045));box-shadow:0 24px 70px rgba(0,0,0,.3)}.hero{border-radius:36px;padding:28px;text-align:center;display:grid;gap:14px}.brand{width:66px;height:66px;border-radius:24px;background:#dbeafe;color:#111827;display:grid;place-items:center;font-size:34px;font-weight:950;margin:0 auto}.eyebrow{color:#bfdbfe;letter-spacing:.22em;text-transform:uppercase;font-size:12px}.hero h1{font-size:clamp(46px,12vw,88px);line-height:.95;margin:0}.hero p{max-width:790px;margin:0 auto;color:#cbd5e1;line-height:1.85;font-size:18px}.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.primary,.secondary,.section-title a,.bottom-nav a{min-height:52px;border-radius:20px;padding:0 18px;display:grid;place-items:center;text-decoration:none;color:#fff;font-weight:900}.primary{background:linear-gradient(135deg,#2563eb,#7c3aed)}.secondary{background:rgba(255,255,255,.1)}.wide{width:100%;margin-top:12px}.status-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.status-card{border-radius:26px;padding:18px;display:grid;gap:8px}.status-card span,.status-card small,.module-card small,.task-row small,.panel p{color:#cbd5e1;line-height:1.6}.status-card strong{font-size:30px}.main-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.panel{border-radius:30px;padding:20px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.section-title h2{margin:0}.section-title a{min-height:42px;background:rgba(59,130,246,.18);color:#bfdbfe}.prompt-box{border:1px solid rgba(255,255,255,.1);background:rgba(15,23,42,.75);border-radius:22px;padding:18px;font-size:20px;line-height:1.8;color:#e5e7eb}.task-list{display:grid;gap:10px}.task-row{border:1px solid rgba(255,255,255,.1);background:rgba(15,23,42,.7);border-radius:18px;padding:14px;display:grid;gap:5px}.module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px}.module-card{border-radius:28px;padding:18px;display:grid;gap:10px;text-decoration:none;color:#fff;min-height:165px}.module-card b{font-size:34px}.module-card strong{font-size:20px}.bottom-nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:20;max-width:860px;margin:auto;border-radius:24px;padding:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:rgba(15,23,42,.92);backdrop-filter:blur(18px)}.bottom-nav a{min-height:48px;border-radius:17px;background:rgba(59,130,246,.18);font-size:14px}@media(max-width:760px){.os-shell{padding:12px 10px calc(92px + env(safe-area-inset-bottom))}.hero{border-radius:30px;padding:22px}.hero p{font-size:15px}.hero-actions{display:grid}.status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.main-grid{grid-template-columns:1fr}.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.module-card{min-height:155px;padding:14px}.bottom-nav a{font-size:13px;padding:0 8px}}`;
+const styles = `
+:root{color-scheme:dark;font-family:Cairo,-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif;background:#030712}*{box-sizing:border-box}body{margin:0;background:#030712;color:#f8fafc}.pro-shell{position:relative;min-height:100vh;overflow:hidden;padding:24px 24px 110px 108px;background:radial-gradient(circle at 15% 5%,rgba(6,182,212,.28),transparent 28%),radial-gradient(circle at 80% 0%,rgba(124,58,237,.34),transparent 34%),linear-gradient(135deg,#030712,#08111f 55%,#020617)}.orb{position:fixed;border-radius:999px;filter:blur(70px);pointer-events:none;opacity:.65}.orb-a{width:340px;height:340px;background:#2563eb;right:-120px;top:90px}.orb-b{width:260px;height:260px;background:#7c3aed;left:-80px;bottom:120px}.side-rail{position:fixed;right:22px;top:22px;bottom:22px;width:68px;border:1px solid rgba(255,255,255,.14);border-radius:30px;background:rgba(15,23,42,.58);backdrop-filter:blur(22px);display:grid;align-content:start;gap:12px;padding:12px;z-index:10;box-shadow:0 24px 80px rgba(0,0,0,.38)}.logo{height:46px;border-radius:18px;background:linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed);display:grid;place-items:center;font-weight:950;letter-spacing:-.08em}.side-rail a{height:46px;border-radius:18px;display:grid;place-items:center;text-decoration:none;color:#cbd5e1;background:rgba(255,255,255,.05);font-size:11px;font-weight:900}.hero-pro,.panel,.metric,.module-card,.ai-card{border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.045));backdrop-filter:blur(22px);box-shadow:0 28px 90px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.08)}.hero-pro{max-width:1180px;margin:0 auto;border-radius:42px;padding:34px;display:grid;grid-template-columns:1.4fr .75fr;gap:22px;align-items:stretch;min-height:360px}.hero-copy{display:grid;align-content:center;gap:18px}.eyebrow{color:#67e8f9;letter-spacing:.24em;font-size:12px;font-weight:900}.hero-pro h1{font-size:clamp(44px,8vw,92px);line-height:.98;letter-spacing:-.07em;margin:0;max-width:820px}.hero-pro p{color:#cbd5e1;line-height:1.9;font-size:18px;max-width:720px;margin:0}.hero-actions{display:flex;gap:12px;flex-wrap:wrap}.primary,.secondary{min-height:54px;border-radius:20px;padding:0 22px;display:grid;place-items:center;text-decoration:none;color:#fff;font-weight:950}.primary{background:linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed);box-shadow:0 18px 55px rgba(37,99,235,.34)}.secondary{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12)}.ai-card{border-radius:34px;padding:24px;display:grid;align-content:space-between;position:relative;overflow:hidden}.ai-card:before{content:"";position:absolute;inset:auto -60px -70px auto;width:220px;height:220px;border-radius:999px;background:rgba(34,197,94,.25);filter:blur(28px)}.ai-card span,.metric span,.module-card span,.section-title span{color:#67e8f9;font-size:12px;letter-spacing:.12em;font-weight:950}.ai-card strong{font-size:38px;line-height:1.2;position:relative}.ai-card small,.metric small,.module-card small,.task-row small,.panel p{color:#cbd5e1;line-height:1.7}.pulse{width:16px;height:16px;border-radius:999px;background:#22c55e;box-shadow:0 0 0 10px rgba(34,197,94,.15);position:relative}.metrics-grid{max-width:1180px;margin:16px auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.metric{border-radius:28px;padding:18px;display:grid;gap:8px}.metric strong{font-size:30px}.bento-grid{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1.2fr .8fr repeat(2,.65fr);gap:14px}.panel,.module-card{border-radius:30px;padding:20px;text-decoration:none;color:#fff;min-height:190px}.command{grid-column:span 2;min-height:260px}.tasks-panel{grid-row:span 2}.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.section-title a{color:#bfdbfe;text-decoration:none;background:rgba(59,130,246,.18);border-radius:999px;padding:8px 12px;font-weight:900}.panel h2{font-size:34px;line-height:1.2;margin:0 0 12px}.prompt-preview{margin-top:18px;border:1px solid rgba(255,255,255,.12);background:rgba(15,23,42,.72);border-radius:24px;padding:20px;color:#e5e7eb;font-size:22px}.task-list{display:grid;gap:10px}.task-row{border:1px solid rgba(255,255,255,.1);background:rgba(15,23,42,.58);border-radius:18px;padding:13px;display:grid;gap:4px}.module-card{display:grid;align-content:space-between;transition:.22s ease}.module-card:hover{transform:translateY(-6px);border-color:rgba(103,232,249,.42)}.module-card strong{font-size:28px}.mobile-nav{display:none}@media(max-width:900px){.pro-shell{padding:12px 10px 92px}.side-rail{display:none}.hero-pro{grid-template-columns:1fr;border-radius:34px;padding:24px;min-height:auto}.hero-pro h1{font-size:46px}.metrics-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bento-grid{grid-template-columns:1fr}.command,.tasks-panel{grid-column:auto;grid-row:auto}.mobile-nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:8px;border:1px solid rgba(255,255,255,.14);background:rgba(15,23,42,.9);backdrop-filter:blur(22px);border-radius:24px;padding:10px;z-index:20}.mobile-nav a{min-height:48px;border-radius:17px;display:grid;place-items:center;text-decoration:none;color:#fff;background:rgba(59,130,246,.18);font-weight:900;font-size:13px}}
+`;
