@@ -1,0 +1,298 @@
+/* Focus Flow Pro Max consistency layer */
+:root {
+  --ff-bg: #020202;
+  --ff-panel: rgba(10, 10, 10, .58);
+  --ff-panel-strong: rgba(10, 10, 10, .78);
+  --ff-border: rgba(255, 255, 255, .10);
+  --ff-border-strong: rgba(255, 255, 255, .18);
+  --ff-text: #f8fafc;
+  --ff-muted: rgba(248, 250, 252, .58);
+  --ff-cyan: #22d3ee;
+  --ff-blue: #2563eb;
+  --ff-violet: #7c3aed;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(34, 211, 238, .18), transparent 28%),
+    radial-gradient(circle at 88% 4%, rgba(124, 58, 237, .22), transparent 31%),
+    #020202 !important;
+}
+
+.premium-shell,
+.agents-shell,
+.system-shell,
+[class*="min-h-screen"] {
+  background:
+    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px),
+    radial-gradient(circle at 15% 0%, rgba(34,211,238,.18), transparent 30%),
+    radial-gradient(circle at 85% 0%, rgba(124,58,237,.20), transparent 32%),
+    #020202 !important;
+  background-size: 3rem 3rem, 3rem 3rem, auto, auto, auto !important;
+  color: var(--ff-text) !important;
+}
+
+.premium-shell {
+  max-width: none !important;
+  padding: 16px 12px 100px !important;
+}
+
+.premium-shell .hero,
+.agents-shell .hero-card,
+.system-shell .hero-card,
+.premium-card,
+.agents-shell .panel,
+.system-shell .panel,
+.agent-tile,
+.status-card,
+.task-card,
+.project-tile,
+.modal-card,
+.calendar-card,
+.module-card,
+.task-row,
+[class*="Card"] {
+  background: linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.04)) !important;
+  border: 1px solid var(--ff-border) !important;
+  border-radius: 32px !important;
+  box-shadow: 0 28px 90px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  backdrop-filter: blur(22px) !important;
+}
+
+.premium-shell .hero {
+  padding: 32px 28px !important;
+  min-height: 360px !important;
+  display: grid !important;
+  gap: 24px !important;
+  align-content: center !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.premium-shell .hero::before,
+.agents-shell .hero-card::before,
+.system-shell .hero-card::before {
+  content: "" !important;
+  position: absolute !important;
+  width: 380px !important;
+  height: 380px !important;
+  right: -100px !important;
+  top: -120px !important;
+  border-radius: 999px !important;
+  background: rgba(34, 211, 238, .18) !important;
+  filter: blur(70px) !important;
+  pointer-events: none !important;
+}
+
+.premium-shell .hero h1,
+.agents-shell .hero-card h1,
+.system-shell .hero-card h1 {
+  color: #fff !important;
+  font-size: clamp(44px, 10vw, 78px) !important;
+  letter-spacing: -.055em !important;
+  line-height: 1.05 !important;
+}
+
+.premium-shell .hero p,
+.agents-shell .hero-card p,
+.system-shell .hero-card p,
+.premium-card p,
+.task-card p,
+.project-tile p {
+  color: var(--ff-muted) !important;
+  line-height: 1.8 !important;
+}
+
+.eyebrow,
+.section-title span,
+.metric span,
+.status-card b,
+.status-card span,
+.module-card span {
+  color: var(--ff-cyan) !important;
+  letter-spacing: .18em !important;
+  text-transform: uppercase !important;
+  font-weight: 900 !important;
+}
+
+.premium-tabs,
+.mobile-nav,
+.bottom-nav {
+  background: rgba(10,10,10,.88) !important;
+  border: 1px solid var(--ff-border) !important;
+  border-radius: 28px !important;
+  padding: 10px !important;
+  box-shadow: 0 24px 80px rgba(0,0,0,.42) !important;
+  backdrop-filter: blur(24px) !important;
+}
+
+.premium-tabs button,
+.mobile-nav a,
+.bottom-nav a {
+  min-height: 54px !important;
+  border-radius: 20px !important;
+  background: rgba(255,255,255,.05) !important;
+  color: rgba(255,255,255,.76) !important;
+  border: 1px solid transparent !important;
+  transition: .2s ease !important;
+}
+
+.premium-tabs button.active,
+.mobile-nav a:active,
+.bottom-nav a:hover {
+  background: linear-gradient(135deg, rgba(34,211,238,.22), rgba(37,99,235,.28), rgba(124,58,237,.24)) !important;
+  border-color: rgba(34,211,238,.30) !important;
+  color: #fff !important;
+  box-shadow: 0 14px 45px rgba(37,99,235,.24) !important;
+}
+
+button,
+.primary,
+.primary-wide,
+.hero-actions button,
+.command-row button,
+.cloud-actions button,
+.modal-actions button,
+.actions button,
+.import-button {
+  border-radius: 20px !important;
+  min-height: 50px !important;
+  font-weight: 900 !important;
+}
+
+.primary,
+.primary-wide,
+.hero-actions button:not(.ghost),
+.command-row button,
+.cloud-actions button:not(.ghost),
+.modal-actions button[type="submit"],
+.actions button:not(.ghost) {
+  background: linear-gradient(135deg, var(--ff-cyan), var(--ff-blue), var(--ff-violet)) !important;
+  color: white !important;
+  border: 0 !important;
+  box-shadow: 0 16px 48px rgba(37,99,235,.28) !important;
+}
+
+.ghost,
+.danger-soft,
+.hero-actions button.ghost {
+  background: rgba(255,255,255,.07) !important;
+  color: white !important;
+  border: 1px solid var(--ff-border) !important;
+}
+
+.search,
+input,
+textarea,
+select {
+  background: rgba(15,23,42,.72) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 22px !important;
+  min-height: 54px !important;
+}
+
+.search::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255,255,255,.38) !important;
+}
+
+.task-card,
+.project-tile,
+.insight,
+.ai-row,
+.storage-choice {
+  transition: transform .22s ease, border-color .22s ease, background .22s ease !important;
+}
+
+.task-card:hover,
+.project-tile:hover,
+.insight:hover,
+.ai-row:hover,
+.storage-choice:hover,
+.module-card:hover,
+.agent-tile:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(34,211,238,.32) !important;
+  background: linear-gradient(145deg, rgba(34,211,238,.08), rgba(124,58,237,.05)) !important;
+}
+
+.priority-pill,
+.chips span,
+.cloud-badge,
+.status-pill {
+  border-radius: 999px !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  background: rgba(255,255,255,.06) !important;
+  color: rgba(255,255,255,.82) !important;
+}
+
+.priority-pill.high,
+.priority-pill.urgent,
+.danger-chip {
+  color: #fb7185 !important;
+  background: rgba(244,63,94,.13) !important;
+  border-color: rgba(244,63,94,.25) !important;
+}
+
+.cloud-badge.ok,
+.status-pill {
+  color: #86efac !important;
+  background: rgba(34,197,94,.12) !important;
+  border-color: rgba(34,197,94,.26) !important;
+}
+
+.kanban-board {
+  gap: 14px !important;
+}
+
+.kanban-col {
+  background: rgba(10,10,10,.46) !important;
+  border: 1px solid var(--ff-border) !important;
+  border-radius: 28px !important;
+  padding: 14px !important;
+  backdrop-filter: blur(18px) !important;
+}
+
+.calendar-grid button {
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  color: white !important;
+  border-radius: 18px !important;
+}
+
+.calendar-grid button.today {
+  background: linear-gradient(135deg, var(--ff-cyan), var(--ff-blue)) !important;
+  box-shadow: 0 14px 36px rgba(37,99,235,.32) !important;
+}
+
+.modal-backdrop {
+  background: rgba(0,0,0,.72) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+@media (max-width: 760px) {
+  .premium-shell {
+    padding: 12px 10px 104px !important;
+  }
+  .premium-shell .hero {
+    border-radius: 36px !important;
+    padding: 28px 22px !important;
+  }
+  .premium-tabs {
+    position: sticky !important;
+    top: 10px !important;
+    z-index: 30 !important;
+  }
+  .premium-tabs button {
+    min-width: 94px !important;
+  }
+  .premium-card,
+  .task-card,
+  .project-tile,
+  .modal-card {
+    border-radius: 28px !important;
+  }
+}
