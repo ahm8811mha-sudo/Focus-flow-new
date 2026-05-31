@@ -102,6 +102,21 @@ function base64Url(input: string) {
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
 
+function encodeMailHeader(value: string) {
+  const clean = String(value || '').replace(/[\r\n]+/g, ' ').trim();
+  if (!clean) return '';
+  if (/^[\x00-\x7F]*$/.test(clean)) return clean;
+  return `=?UTF-8?B?${base64Url(clean).replace(/-/g, '+').replace(/_/g, '/')}${'='.repeat((4 - (base64Url(clean).length % 4)) % 4)}?=`;
+}
+
+function normalizeMailBody(value: string) {
+  return String(value || '')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .replace(/\n/g, '\r\n')
+    .trim();
+}
+
 async function findBackupFile(token: string): Promise<string | null> {
   const query = encodeURIComponent(`name='${BACKUP_FILE_NAME}' and trashed=false`);
   const url = `https://www.googleapis.com/drive/v3/files?q=${query}&spaces=appDataFolder&fields=files(id,name,modifiedTime)&pageSize=1`;
@@ -189,15 +204,18 @@ export async function syncTasksToGoogleCalendar(tasks: Task[], token = getStored
 
 export async function createGmailDraft(input: GmailDraftInput, token = getStoredDriveToken()) {
   if (!token) throw new Error('اربط Google أولًا');
+  const body = normalizeMailBody(input.body || '');
   const lines = [
+    'MIME-Version: 1.0',
     input.to ? `To: ${input.to}` : '',
     input.cc ? `Cc: ${input.cc}` : '',
     input.bcc ? `Bcc: ${input.bcc}` : '',
-    `Subject: ${input.subject}`,
+    `Subject: ${encodeMailHeader(input.subject || 'رسالة من Focus Flow')}`,
     'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: 8bit',
     '',
-    input.body,
-  ].filter(Boolean).join('\r\n');
+    body || 'تم إنشاء هذه المسودة من Focus Flow.',
+  ].filter((line) => line !== '').join('\r\n');
   const response = await googleFetch('https://gmail.googleapis.com/gmail/v1/users/me/drafts', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
