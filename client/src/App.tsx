@@ -18,6 +18,7 @@ import SettingsPage from "./pages/SettingsPage";
 import SearchPage from "./pages/SearchPage";
 import { Home3D } from "./pages/Home3D";
 import LocalFocusFlow from "./pages/LocalFocusFlow";
+import TaskCenterPage from "./pages/TaskCenterPage";
 import PersonalAgentsPage from "./pages/PersonalAgentsPage";
 import ExecutionAgentsPage from "./pages/ExecutionAgentsPage";
 import SystemHubPage from "./pages/SystemHubPage";
@@ -36,8 +37,9 @@ function Router() {
     <Switch>
       <Route path={"/"} component={FocusFlowOS} />
       <Route path={"/focus"} component={FocusFlowOS} />
-      <Route path={"/tasks"} component={LocalFocusFlow} />
-      <Route path={"/local"} component={LocalFocusFlow} />
+      <Route path={"/tasks"} component={TaskCenterPage} />
+      <Route path={"/local"} component={TaskCenterPage} />
+      <Route path={"/legacy-local"} component={LocalFocusFlow} />
       <Route path={"/directory"} component={DirectoryPage} />
       <Route path={"/execution"} component={ExecutionLogPage} />
       <Route path={"/classic-tasks"} component={ClassicTasksRoute} />
