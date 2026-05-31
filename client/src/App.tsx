@@ -41,7 +41,7 @@ function Router() {
       <Route path={"/home-3d"} component={Home3D} />
       <Route path={"/classic"} component={Home} />
       <Route path={"/tasks"} component={ProTasksRoute} />
-      <Route path={"/calendar"}>{() => (<DashboardLayout><CalendarPage /></DashboardLayout>)}</Route>
+      <Route path={"/calendar"} component={CalendarPage} />
       <Route path={"/kanban"}>{() => (<DashboardLayout><KanbanPage /></DashboardLayout>)}</Route>
       <Route path={"/notes"}>{() => (<DashboardLayout><NotesPage /></DashboardLayout>)}</Route>
       <Route path={"/projects"}>{() => (<DashboardLayout><ProjectsPage /></DashboardLayout>)}</Route>
