@@ -102,19 +102,16 @@ function base64Url(input: string) {
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
 
-function encodeMailHeader(value: string) {
-  const clean = String(value || '').replace(/[\r\n]+/g, ' ').trim();
-  if (!clean) return '';
-  if (/^[\x00-\x7F]*$/.test(clean)) return clean;
-  return `=?UTF-8?B?${base64Url(clean).replace(/-/g, '+').replace(/_/g, '/')}${'='.repeat((4 - (base64Url(clean).length % 4)) % 4)}?=`;
-}
-
 function normalizeMailBody(value: string) {
   return String(value || '')
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
     .replace(/\n/g, '\r\n')
     .trim();
+}
+
+function safeHeader(value: string) {
+  return String(value || '').replace(/[\r\n]+/g, ' ').trim();
 }
 
 async function findBackupFile(token: string): Promise<string | null> {
@@ -204,26 +201,27 @@ export async function syncTasksToGoogleCalendar(tasks: Task[], token = getStored
 
 export async function createGmailDraft(input: GmailDraftInput, token = getStoredDriveToken()) {
   if (!token) throw new Error('اربط Google أولًا');
-  const body = normalizeMailBody(input.body || '');
+  const subject = safeHeader(input.subject || 'Focus Flow Draft');
+  const body = normalizeMailBody(input.body || 'تم إنشاء هذه المسودة من Focus Flow.');
   const lines = [
     'MIME-Version: 1.0',
-    input.to ? `To: ${input.to}` : '',
-    input.cc ? `Cc: ${input.cc}` : '',
-    input.bcc ? `Bcc: ${input.bcc}` : '',
-    `Subject: ${encodeMailHeader(input.subject || 'رسالة من Focus Flow')}`,
+    input.to ? `To: ${safeHeader(input.to)}` : '',
+    input.cc ? `Cc: ${safeHeader(input.cc)}` : '',
+    input.bcc ? `Bcc: ${safeHeader(input.bcc)}` : '',
+    `Subject: ${subject}`,
     'Content-Type: text/plain; charset=UTF-8',
     'Content-Transfer-Encoding: 8bit',
     '',
-    body || 'تم إنشاء هذه المسودة من Focus Flow.',
+    body,
   ].filter((line) => line !== '').join('\r\n');
   const response = await googleFetch('https://gmail.googleapis.com/gmail/v1/users/me/drafts', token, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
     body: JSON.stringify({ message: { raw: base64Url(lines) } }),
   });
   const data = await response.json();
-  await addActivity('Gmail Draft', `تم إنشاء مسودة Gmail: ${input.subject}`, 'system');
-  return data;
+  await addActivity('Gmail Draft', `تم إنشاء مسودة Gmail: ${subject} — Gmail > Drafts`, 'system');
+  return { ...data, subject, location: 'Gmail > Drafts' };
 }
 
 export async function createGoogleSheet(input: SheetInput, token = getStoredDriveToken()) {
