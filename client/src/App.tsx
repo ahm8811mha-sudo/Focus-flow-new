@@ -22,6 +22,7 @@ import PersonalAgentsPage from "./pages/PersonalAgentsPage";
 import SystemHubPage from "./pages/SystemHubPage";
 import FocusFlowOS from "./pages/FocusFlowOS";
 import DirectoryPage from "./pages/DirectoryPage";
+import ExecutionLogPage from "./pages/ExecutionLogPage";
 
 const ClassicTasksRoute = () => (
   <DashboardLayout>
@@ -37,6 +38,7 @@ function Router() {
       <Route path={"/tasks"} component={LocalFocusFlow} />
       <Route path={"/local"} component={LocalFocusFlow} />
       <Route path={"/directory"} component={DirectoryPage} />
+      <Route path={"/execution"} component={ExecutionLogPage} />
       <Route path={"/classic-tasks"} component={ClassicTasksRoute} />
       <Route path={"/agents"} component={PersonalAgentsPage} />
       <Route path={"/personal-agents"} component={PersonalAgentsPage} />
