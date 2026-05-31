@@ -7,6 +7,7 @@ const GOOGLE_SCOPE = [
   'https://www.googleapis.com/auth/drive.file',
   'https://www.googleapis.com/auth/calendar.events',
   'https://www.googleapis.com/auth/gmail.compose',
+  'https://www.googleapis.com/auth/gmail.send',
   'https://www.googleapis.com/auth/spreadsheets',
 ].join(' ');
 
@@ -114,6 +115,23 @@ function safeHeader(value: string) {
   return String(value || '').replace(/[\r\n]+/g, ' ').trim();
 }
 
+function buildRawEmail(input: GmailDraftInput) {
+  const subject = safeHeader(input.subject || 'Focus Flow Email');
+  const body = normalizeMailBody(input.body || 'تم إنشاء هذه الرسالة من Focus Flow.');
+  const lines = [
+    'MIME-Version: 1.0',
+    input.to ? `To: ${safeHeader(input.to)}` : '',
+    input.cc ? `Cc: ${safeHeader(input.cc)}` : '',
+    input.bcc ? `Bcc: ${safeHeader(input.bcc)}` : '',
+    `Subject: ${subject}`,
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: 8bit',
+    '',
+    body,
+  ].filter((line) => line !== '').join('\r\n');
+  return { raw: base64Url(lines), subject };
+}
+
 async function findBackupFile(token: string): Promise<string | null> {
   const query = encodeURIComponent(`name='${BACKUP_FILE_NAME}' and trashed=false`);
   const url = `https://www.googleapis.com/drive/v3/files?q=${query}&spaces=appDataFolder&fields=files(id,name,modifiedTime)&pageSize=1`;
@@ -201,27 +219,29 @@ export async function syncTasksToGoogleCalendar(tasks: Task[], token = getStored
 
 export async function createGmailDraft(input: GmailDraftInput, token = getStoredDriveToken()) {
   if (!token) throw new Error('اربط Google أولًا');
-  const subject = safeHeader(input.subject || 'Focus Flow Draft');
-  const body = normalizeMailBody(input.body || 'تم إنشاء هذه المسودة من Focus Flow.');
-  const lines = [
-    'MIME-Version: 1.0',
-    input.to ? `To: ${safeHeader(input.to)}` : '',
-    input.cc ? `Cc: ${safeHeader(input.cc)}` : '',
-    input.bcc ? `Bcc: ${safeHeader(input.bcc)}` : '',
-    `Subject: ${subject}`,
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: 8bit',
-    '',
-    body,
-  ].filter((line) => line !== '').join('\r\n');
+  const { raw, subject } = buildRawEmail(input);
   const response = await googleFetch('https://gmail.googleapis.com/gmail/v1/users/me/drafts', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-    body: JSON.stringify({ message: { raw: base64Url(lines) } }),
+    body: JSON.stringify({ message: { raw } }),
   });
   const data = await response.json();
   await addActivity('Gmail Draft', `تم إنشاء مسودة Gmail: ${subject} — Gmail > Drafts`, 'system');
   return { ...data, subject, location: 'Gmail > Drafts' };
+}
+
+export async function sendGmailEmail(input: GmailDraftInput, token = getStoredDriveToken()) {
+  if (!token) throw new Error('اربط Google أولًا');
+  if (!input.to) throw new Error('لا يمكن إرسال البريد بدون مستلم');
+  const { raw, subject } = buildRawEmail(input);
+  const response = await googleFetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+    body: JSON.stringify({ raw }),
+  });
+  const data = await response.json();
+  await addActivity('Gmail Send', `تم إرسال بريد Gmail: ${subject}`, 'system');
+  return { ...data, subject, location: 'Gmail > Sent' };
 }
 
 export async function createGoogleSheet(input: SheetInput, token = getStoredDriveToken()) {
