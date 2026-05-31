@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocalMemory } from '@/hooks/useLocalMemory';
 import { getStoredDriveToken } from '@/lib/googleDriveCloud';
 import { motion } from 'framer-motion';
-import { Sparkles, Terminal, CheckCircle2, AlertCircle, LayoutGrid, BrainCircuit, Calendar, FolderKanban } from 'lucide-react';
+import { Sparkles, Terminal, CheckCircle2, AlertCircle, LayoutGrid, BrainCircuit, Calendar, FolderKanban, Search } from 'lucide-react';
 
 function today() { return new Date().toISOString().slice(0, 10); }
 
 const modules = [
   { title: 'الوكلاء', href: '/agents', tag: 'AI Command', desc: 'القائد العام يحول الطلب إلى إجراءات قابلة للتنفيذ.', icon: BrainCircuit },
-  { title: 'المهام', href: '/focus', tag: 'Execution', desc: 'إضافة وتعديل ومتابعة المهام والمشاريع.', icon: CheckCircle2 },
+  { title: 'المهام', href: '/tasks', tag: 'Execution', desc: 'إضافة وتعديل ومتابعة المهام والمواعيد.', icon: CheckCircle2 },
+  { title: 'الدليل', href: '/directory', tag: 'Directory', desc: 'جهات الاتصال والأرقام التي يعتمد عليها الوكيل في التنفيذ.', icon: Search },
   { title: 'النظام', href: '/system', tag: 'Control', desc: 'Gemini و Google Drive و Gmail و Calendar.', icon: LayoutGrid },
   { title: 'المشاريع', href: '/projects', tag: 'Projects', desc: 'متابعة التقدم والتكاليف والخطوات.', icon: FolderKanban },
 ];
@@ -44,7 +45,8 @@ export default function FocusFlowOS() {
         </div>
         <div className="flex flex-col gap-3 mt-4">
           <a href="/agents" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">AI</a>
-          <a href="/focus" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Tasks</a>
+          <a href="/tasks" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Tasks</a>
+          <a href="/directory" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Dir</a>
           <a href="/system" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Sys</a>
           <a href="/calendar" className="h-12 rounded-2xl flex items-center justify-center text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all">Cal</a>
         </div>
@@ -63,14 +65,17 @@ export default function FocusFlowOS() {
               </span>
             </h1>
             <p className="text-white/60 text-lg md:text-xl max-w-2xl leading-relaxed">
-              واجهة مركزية للوكلاء، المهام، المشاريع، التقويم، وخدمات Google بتصميم زجاجي احترافي.
+              واجهة مركزية للوكلاء، المهام، الدليل، المشاريع، التقويم، وخدمات Google بتصميم زجاجي احترافي.
             </p>
             <div className="flex flex-wrap gap-4 mt-2">
               <a href="/agents" className="h-14 px-8 rounded-2xl flex items-center justify-center text-white font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-[0_10px_30px_rgba(37,99,235,0.4)] transition-all hover:scale-105">
                 تشغيل الوكلاء
               </a>
-              <a href="/focus" className="h-14 px-8 rounded-2xl flex items-center justify-center text-white font-bold bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105">
+              <a href="/tasks" className="h-14 px-8 rounded-2xl flex items-center justify-center text-white font-bold bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105">
                 فتح المهام
+              </a>
+              <a href="/directory" className="h-14 px-8 rounded-2xl flex items-center justify-center text-white font-bold bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105">
+                فتح الدليل
               </a>
             </div>
           </div>
@@ -111,10 +116,10 @@ export default function FocusFlowOS() {
               <a href="/agents" className="px-4 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold hover:bg-indigo-500/30 transition-colors">فتح الوحدة</a>
             </div>
             <h2 className="text-3xl font-bold text-white mb-3">اطلب قرار، وخله يتحول لتنفيذ.</h2>
-            <p className="text-white/60 text-lg mb-8 max-w-xl">مثال: رتب يومي، حدد أهم 3 إجراءات، أنشئ المهام، وجهز رسالة متابعة للعميل.</p>
+            <p className="text-white/60 text-lg mb-8 max-w-xl">مثال: احصر جهات اتصال، أنشئ جدول متابعة، وجدول مواعيد الاتصال.</p>
             <div className="mt-auto p-5 rounded-2xl bg-[#050505]/80 border border-white/5 text-white/80 font-medium flex items-center gap-3 shadow-inner">
               <Terminal className="w-5 h-5 text-indigo-400" />
-              رتب يومي وابدأ بالأكثر تأثيرًا...
+              ابحث عن جهات الاتصال واحفظها في الدليل...
               <span className="w-2 h-5 bg-indigo-500 animate-pulse ml-auto" />
             </div>
           </article>
@@ -122,7 +127,7 @@ export default function FocusFlowOS() {
           <article className="p-8 rounded-[32px] border border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl flex flex-col h-full">
             <div className="flex items-center justify-between mb-6">
               <span className="text-cyan-400 text-xs font-black tracking-widest uppercase">Active Tasks</span>
-              <a href="/focus" className="px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold hover:bg-cyan-500/30 transition-colors">إدارة</a>
+              <a href="/tasks" className="px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold hover:bg-cyan-500/30 transition-colors">إدارة</a>
             </div>
             <div className="flex flex-col gap-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">
               {topTasks.map((task) => (
@@ -133,9 +138,7 @@ export default function FocusFlowOS() {
                   </small>
                 </div>
               ))}
-              {!topTasks.length && (
-                <div className="flex-1 flex items-center justify-center text-white/40 text-sm">لا توجد مهام مفتوحة حالياً.</div>
-              )}
+              {!topTasks.length && <div className="flex-1 flex items-center justify-center text-white/40 text-sm">لا توجد مهام مفتوحة حالياً.</div>}
             </div>
           </article>
 
@@ -155,10 +158,10 @@ export default function FocusFlowOS() {
       </motion.div>
 
       <nav className="lg:hidden fixed bottom-6 left-4 right-4 p-2 rounded-3xl border border-white/10 bg-[#0a0a0a]/90 backdrop-blur-2xl shadow-2xl z-50 flex gap-2">
-        <a href="/agents" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-sm font-bold active:scale-95 transition-transform">الوكلاء</a>
-        <a href="/focus" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-sm font-bold active:scale-95 transition-transform">المهام</a>
-        <a href="/system" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-sm font-bold active:scale-95 transition-transform">النظام</a>
-        <a href="/calendar" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-sm font-bold active:scale-95 transition-transform">التقويم</a>
+        <a href="/agents" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-xs font-bold active:scale-95 transition-transform">الوكلاء</a>
+        <a href="/tasks" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-xs font-bold active:scale-95 transition-transform">المهام</a>
+        <a href="/directory" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-xs font-bold active:scale-95 transition-transform">الدليل</a>
+        <a href="/calendar" className="flex-1 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white text-xs font-bold active:scale-95 transition-transform">التقويم</a>
       </nav>
     </main>
   );
