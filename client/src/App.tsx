@@ -19,6 +19,7 @@ import SearchPage from "./pages/SearchPage";
 import { Home3D } from "./pages/Home3D";
 import LocalFocusFlow from "./pages/LocalFocusFlow";
 import PersonalAgentsPage from "./pages/PersonalAgentsPage";
+import ExecutionAgentsPage from "./pages/ExecutionAgentsPage";
 import SystemHubPage from "./pages/SystemHubPage";
 import FocusFlowOS from "./pages/FocusFlowOS";
 import DirectoryPage from "./pages/DirectoryPage";
@@ -40,7 +41,7 @@ function Router() {
       <Route path={"/directory"} component={DirectoryPage} />
       <Route path={"/execution"} component={ExecutionLogPage} />
       <Route path={"/classic-tasks"} component={ClassicTasksRoute} />
-      <Route path={"/agents"} component={PersonalAgentsPage} />
+      <Route path={"/agents"} component={ExecutionAgentsPage} />
       <Route path={"/personal-agents"} component={PersonalAgentsPage} />
       <Route path={"/system"} component={SystemHubPage} />
       <Route path={"/hub"} component={SystemHubPage} />
