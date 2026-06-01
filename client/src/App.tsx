@@ -36,30 +36,30 @@ const ClassicTasksRoute = () => (
 function Router() {
   return (
     <Switch>
-      <Route path={"/"} component={FocusFlowOS} />
-      <Route path={"/focus"} component={FocusFlowOS} />
-      <Route path={"/tasks"} component={TaskCenterPage} />
-      <Route path={"/local"} component={TaskCenterPage} />
-      <Route path={"/legacy-local"} component={LocalFocusFlow} />
-      <Route path={"/directory"} component={DirectoryPage} />
-      <Route path={"/tables"} component={TablesPage} />
-      <Route path={"/execution"} component={ExecutionLogPage} />
-      <Route path={"/classic-tasks"} component={ClassicTasksRoute} />
-      <Route path={"/agents"} component={ExecutionAgentsPage} />
-      <Route path={"/personal-agents"} component={PersonalAgentsPage} />
-      <Route path={"/system"} component={SystemHubPage} />
-      <Route path={"/hub"} component={SystemHubPage} />
-      <Route path={"/home-3d"} component={Home3D} />
-      <Route path={"/classic"} component={Home} />
-      <Route path={"/calendar"} component={CalendarPage} />
-      <Route path={"/kanban"}>{() => (<DashboardLayout><KanbanPage /></DashboardLayout>)}</Route>
-      <Route path={"/notes"}>{() => (<DashboardLayout><NotesPage /></DashboardLayout>)}</Route>
-      <Route path={"/projects"}>{() => (<DashboardLayout><ProjectsPage /></DashboardLayout>)}</Route>
-      <Route path={"/projects/:projectId"}>{() => (<DashboardLayout><ProjectDetailPage /></DashboardLayout>)}</Route>
-      <Route path={"/statistics"}>{() => (<DashboardLayout><StatisticsPage /></DashboardLayout>)}</Route>
-      <Route path={"/settings"}>{() => (<DashboardLayout><SettingsPage /></DashboardLayout>)}</Route>
-      <Route path={"/search"}>{() => (<DashboardLayout><SearchPage /></DashboardLayout>)}</Route>
-      <Route path={"/404"} component={NotFound} />
+      <Route path="/" component={FocusFlowOS} />
+      <Route path="/focus" component={FocusFlowOS} />
+      <Route path="/tasks" component={TaskCenterPage} />
+      <Route path="/local" component={TaskCenterPage} />
+      <Route path="/legacy-local" component={LocalFocusFlow} />
+      <Route path="/directory" component={DirectoryPage} />
+      <Route path="/tables" component={TablesPage} />
+      <Route path="/execution" component={ExecutionLogPage} />
+      <Route path="/classic-tasks" component={ClassicTasksRoute} />
+      <Route path="/agents" component={ExecutionAgentsPage} />
+      <Route path="/personal-agents" component={PersonalAgentsPage} />
+      <Route path="/system" component={SystemHubPage} />
+      <Route path="/hub" component={SystemHubPage} />
+      <Route path="/home-3d" component={Home3D} />
+      <Route path="/classic" component={Home} />
+      <Route path="/calendar" component={CalendarPage} />
+      <Route path="/projects" component={ProjectsPage} />
+      <Route path="/projects/:projectId" component={ProjectsPage} />
+      <Route path="/kanban">{() => (<DashboardLayout><KanbanPage /></DashboardLayout>)}</Route>
+      <Route path="/notes">{() => (<DashboardLayout><NotesPage /></DashboardLayout>)}</Route>
+      <Route path="/statistics">{() => (<DashboardLayout><StatisticsPage /></DashboardLayout>)}</Route>
+      <Route path="/settings">{() => (<DashboardLayout><SettingsPage /></DashboardLayout>)}</Route>
+      <Route path="/search">{() => (<DashboardLayout><SearchPage /></DashboardLayout>)}</Route>
+      <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -71,9 +71,7 @@ function App() {
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster />
-          <div dir="rtl">
-            <Router />
-          </div>
+          <div dir="rtl"><Router /></div>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
