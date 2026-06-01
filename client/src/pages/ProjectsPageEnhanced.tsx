@@ -24,6 +24,7 @@ interface ProjectForm {
 const COLORS_PALETTE = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#06b6d4", "#14b8a6"];
 const ICONS = ["🚀", "📱", "💼", "🎯", "📊", "🔧", "📚", "🎨", "🌟", "⚡"];
 const CHART_COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6"];
+const asArray = <T,>(value: any): T[] => Array.isArray(value) ? value : [];
 
 export default function ProjectsPageEnhanced() {
   const [, navigate] = useLocation();
@@ -65,8 +66,8 @@ export default function ProjectsPageEnhanced() {
     },
   });
 
-  const projects = projectsQuery.data || [];
-  const tasks = tasksQuery.data || [];
+  const projects = asArray<any>(projectsQuery.data);
+  const tasks = asArray<any>(tasksQuery.data);
 
   const resetForm = () => {
     setFormData({
@@ -80,8 +81,8 @@ export default function ProjectsPageEnhanced() {
   };
 
   const getProjectStats = (projectId: string) => {
-    const projectTasks = tasks.filter(t => t.projectId === projectId);
-    const completedTasks = projectTasks.filter(t => t.isDone).length;
+    const projectTasks = tasks.filter(t => t?.projectId === projectId);
+    const completedTasks = projectTasks.filter(t => t?.isDone || t?.status === 'done').length;
     const totalTasks = projectTasks.length;
     const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
     
@@ -96,9 +97,9 @@ export default function ProjectsPageEnhanced() {
   const getOverallStats = () => {
     const totalProjects = projects.length;
     const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(t => t.isDone).length;
+    const completedTasks = tasks.filter(t => t?.isDone || t?.status === 'done').length;
     const pendingTasks = totalTasks - completedTasks;
-    const highPriorityTasks = tasks.filter(t => t.priority === "عالية").length;
+    const highPriorityTasks = tasks.filter(t => t?.priority === "عالية" || t?.priority === 'high' || t?.priority === 'urgent').length;
     
     return {
       totalProjects,
@@ -112,27 +113,27 @@ export default function ProjectsPageEnhanced() {
 
   const getPriorityDistribution = () => {
     const distribution = {
-      عالية: projects.filter(p => p.priority === "عالية").length,
-      متوسطة: projects.filter(p => p.priority === "متوسطة").length,
-      منخفضة: projects.filter(p => p.priority === "منخفضة").length,
+      عالية: projects.filter(p => p?.priority === "عالية" || p?.priority === 'high' || p?.priority === 'urgent').length,
+      متوسطة: projects.filter(p => !p?.priority || p?.priority === "متوسطة" || p?.priority === 'medium').length,
+      منخفضة: projects.filter(p => p?.priority === "منخفضة" || p?.priority === 'low').length,
     };
     return Object.entries(distribution).map(([name, value]) => ({ name, value }));
   };
 
   const getStatusDistribution = () => {
     const distribution = {
-      "نشط": projects.filter(p => p.status === "active").length,
-      "معلق": projects.filter(p => p.status === "on-hold").length,
-      "مكتمل": projects.filter(p => p.status === "completed").length,
+      "نشط": projects.filter(p => !p?.status || p?.status === "active").length,
+      "معلق": projects.filter(p => p?.status === "on-hold").length,
+      "مكتمل": projects.filter(p => p?.status === "completed" || p?.status === 'done').length,
     };
     return Object.entries(distribution).map(([name, value]) => ({ name, value }));
   };
 
   const getTasksPerProject = () => {
     return projects.map(p => ({
-      name: p.name,
-      المهام: tasks.filter(t => t.projectId === p.id).length,
-      مكتملة: tasks.filter(t => t.projectId === p.id && t.isDone).length,
+      name: p?.name || p?.title || 'مشروع',
+      المهام: tasks.filter(t => t?.projectId === p?.id).length,
+      مكتملة: tasks.filter(t => t?.projectId === p?.id && (t?.isDone || t?.status === 'done')).length,
     }));
   };
 
@@ -156,12 +157,12 @@ export default function ProjectsPageEnhanced() {
   const handleEditProject = (project: any) => {
     setEditingProject(project.id);
     setFormData({
-      name: project.name,
-      description: project.description || "",
-      color: project.color,
-      icon: project.icon,
-      priority: project.priority || "متوسطة",
-      status: project.status || "نشط",
+      name: project?.name || project?.title || '',
+      description: project?.description || "",
+      color: project?.color || COLORS_PALETTE[0],
+      icon: project?.icon || ICONS[0],
+      priority: project?.priority || "متوسطة",
+      status: project?.status || "active",
     });
     setShowAddProject(true);
   };
@@ -177,9 +178,10 @@ export default function ProjectsPageEnhanced() {
   };
 
   const filteredProjects = projects.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === "الكل" || (p.status as string) === filterStatus;
-    const matchesPriority = filterPriority === "الكل" || p.priority === filterPriority;
+    const projectName = String(p?.name || p?.title || '').toLowerCase();
+    const matchesSearch = projectName.includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === "الكل" || String(p?.status || 'active') === filterStatus;
+    const matchesPriority = filterPriority === "الكل" || p?.priority === filterPriority;
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
@@ -295,7 +297,7 @@ export default function ProjectsPageEnhanced() {
                 <PieChart>
                   <Pie data={statusData} cx="50%" cy="50%" labelLine={false} label={({ name, value }) => `${name}: ${value}`} outerRadius={80} fill="#8884d8" dataKey="value">
                     {statusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                      <Cell key={`cell-status-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -303,263 +305,70 @@ export default function ProjectsPageEnhanced() {
               </ResponsiveContainer>
             </Card>
           </div>
-
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">المهام حسب المشروع</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={tasksPerProject}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="المهام" fill="#3b82f6" />
-                <Bar dataKey="مكتملة" fill="#10b981" />
-              </BarChart>
-            </ResponsiveContainer>
-          </Card>
         </TabsContent>
 
         {/* Projects Tab */}
         <TabsContent value="projects" className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute right-3 top-3 w-5 h-5 text-gray-500" />
-              <Input
-                placeholder="ابحث عن مشروع..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-10"
-              />
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute right-3 top-3 w-5 h-5 text-gray-400" />
+              <Input placeholder="البحث في المشاريع..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pr-10" />
             </div>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm"
-            >
-              <option value="الكل">جميع الحالات</option>
-              <option value="active">نشط</option>
-              <option value="on-hold">معلق</option>
-              <option value="completed">مكتمل</option>
-            </select>
-            <select
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
-              className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm"
-            >
-              <option value="الكل">جميع الأولويات</option>
-              <option value="عالية">عالية</option>
-              <option value="متوسطة">متوسطة</option>
-              <option value="منخفضة">منخفضة</option>
-            </select>
-            <Button onClick={() => { resetForm(); setEditingProject(null); setShowAddProject(true); }} className="gap-2">
-              <Plus className="w-4 h-4" />
+            <Button onClick={() => setShowAddProject(true)}>
+              <Plus className="w-4 h-4 ml-2" />
               مشروع جديد
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredProjects.map((project) => {
-              const stats = getProjectStats(project.id);
+              const projectStats = getProjectStats(project.id);
               return (
-                <Card key={project.id} className="p-6 hover:border-blue-500/50 transition-colors cursor-pointer" onClick={() => navigate(`/projects/${project.id}`)}>
+                <Card key={project.id} className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="text-3xl">{project.icon}</div>
-                      <div>
-                        <h3 className="font-semibold text-lg">{project.name}</h3>
-                        <p className="text-sm text-gray-400">{project.description}</p>
-                      </div>
+                    <div>
+                      <div className="text-3xl mb-2">{project.icon || '📁'}</div>
+                      <h3 className="text-xl font-bold">{project.name || project.title || 'مشروع'}</h3>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); handleEditProject(project); }}>
+                      <Button size="icon" variant="ghost" onClick={() => handleEditProject(project)}>
                         <Edit2 className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); handleDeleteProject(project.id); }}>
+                      <Button size="icon" variant="ghost" onClick={() => handleDeleteProject(project.id)}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
-
-                  <div className="space-y-3">
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>التقدم</span>
-                        <span className="font-semibold">{stats.progress}%</span>
-                      </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${stats.progress}%` }} />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                      <div className="bg-gray-800/50 p-2 rounded">
-                        <p className="text-xs text-gray-400">إجمالي</p>
-                        <p className="font-semibold">{stats.total}</p>
-                      </div>
-                      <div className="bg-green-900/20 p-2 rounded">
-                        <p className="text-xs text-gray-400">مكتملة</p>
-                        <p className="font-semibold text-green-400">{stats.completed}</p>
-                      </div>
-                      <div className="bg-orange-900/20 p-2 rounded">
-                        <p className="text-xs text-gray-400">معلقة</p>
-                        <p className="font-semibold text-orange-400">{stats.pending}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 text-xs">
-                      <span className="px-2 py-1 bg-gray-800 rounded">الأولوية: {project.priority}</span>
-                      <span className="px-2 py-1 bg-gray-800 rounded">الحالة: {project.status === "active" ? "نشط" : project.status === "on-hold" ? "معلق" : project.status === "completed" ? "مكتمل" : "مؤرشف"}</span>
-                    </div>
+                  <p className="text-gray-400 text-sm mb-4">{project.description || 'بدون وصف'}</p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm"><span>التقدم</span><span>{projectStats.progress}%</span></div>
+                    <div className="w-full bg-gray-700 rounded-full h-2"><div className="bg-blue-500 h-2 rounded-full" style={{ width: `${projectStats.progress}%` }} /></div>
+                    <div className="flex justify-between text-sm text-gray-400"><span>{projectStats.completed} مكتملة</span><span>{projectStats.total} إجمالي</span></div>
                   </div>
                 </Card>
               );
             })}
+            {!filteredProjects.length && <Card className="p-8 text-center text-gray-400">لا توجد مشاريع مطابقة.</Card>}
           </div>
         </TabsContent>
 
-        {/* Timeline Tab */}
         <TabsContent value="timeline" className="space-y-6">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">الجدول الزمني للمشاريع</h3>
-            <div className="space-y-4">
-              {projects.map((project) => (
-                <div key={project.id} className="flex items-center gap-4 p-4 bg-gray-800/50 rounded-lg">
-                  <div className="text-2xl">{project.icon}</div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold">{project.name}</h4>
-                    <p className="text-sm text-gray-400">{project.startDate || "لم يتم تحديد"} - {project.endDate || "لم يتم تحديد"}</p>
-                  </div>
-                    <span className="px-3 py-1 bg-blue-900/20 text-blue-400 rounded-full text-sm">{project.status === "active" ? "نشط" : project.status === "on-hold" ? "معلق" : project.status === "completed" ? "مكتمل" : "مؤرشف"}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
+          <Card className="p-6"><h3 className="text-lg font-semibold mb-4">الجدول الزمني</h3><p className="text-gray-400">عرض زمني للمشاريع والمهام قيد التطوير.</p></Card>
         </TabsContent>
-
-        {/* Analytics Tab */}
         <TabsContent value="analytics" className="space-y-6">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">تقرير الأداء</h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-gray-800/50 rounded-lg">
-                  <p className="text-sm text-gray-400 mb-1">متوسط التقدم</p>
-                  <p className="text-2xl font-bold">{Math.round(projects.reduce((acc, p) => acc + getProjectStats(p.id).progress, 0) / (projects.length || 1))}%</p>
-                </div>
-                <div className="p-4 bg-gray-800/50 rounded-lg">
-                  <p className="text-sm text-gray-400 mb-1">المشاريع النشطة</p>
-                  <p className="text-2xl font-bold">{projects.filter(p => p.status === "active").length}</p>
-                </div>
-              </div>
-            </div>
-          </Card>
+          <Card className="p-6"><h3 className="text-lg font-semibold mb-4">المهام حسب المشروع</h3><ResponsiveContainer width="100%" height={300}><BarChart data={tasksPerProject}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="name" /><YAxis /><Tooltip /><Legend /><Bar dataKey="المهام" fill="#3b82f6" /><Bar dataKey="مكتملة" fill="#10b981" /></BarChart></ResponsiveContainer></Card>
         </TabsContent>
-
-        {/* Settings Tab */}
-        <TabsContent value="settings" className="space-y-6">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">إعدادات المشاريع</h3>
-            <p className="text-gray-400">قريباً: إعدادات متقدمة للمشاريع والقوالب والأدوار</p>
-          </Card>
-        </TabsContent>
+        <TabsContent value="settings" className="space-y-6"><Card className="p-6"><h3 className="text-lg font-semibold mb-4">إعدادات المشاريع</h3><p className="text-gray-400">تخصيص إعدادات المشاريع قيد التطوير.</p></Card></TabsContent>
       </Tabs>
 
-      {/* Add/Edit Project Dialog */}
       <Dialog open={showAddProject} onOpenChange={setShowAddProject}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editingProject ? "تعديل المشروع" : "مشروع جديد"}</DialogTitle>
-          </DialogHeader>
-
+        <DialogContent>
+          <DialogHeader><DialogTitle>{editingProject ? "تعديل المشروع" : "مشروع جديد"}</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">اسم المشروع</label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="أدخل اسم المشروع"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium mb-2 block">الوصف</label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="أدخل وصف المشروع"
-                rows={3}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">اللون</label>
-                <div className="flex gap-2 flex-wrap">
-                  {COLORS_PALETTE.map((color) => (
-                    <button
-                      key={color}
-                      className={`w-8 h-8 rounded-lg border-2 ${formData.color === color ? "border-white" : "border-transparent"}`}
-                      style={{ backgroundColor: color }}
-                      onClick={() => setFormData({ ...formData, color })}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">الأيقونة</label>
-                <div className="flex gap-2 flex-wrap">
-                  {ICONS.map((icon) => (
-                    <button
-                      key={icon}
-                      className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center ${formData.icon === icon ? "border-white bg-gray-700" : "border-gray-700"}`}
-                      onClick={() => setFormData({ ...formData, icon })}
-                    >
-                      {icon}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">الأولوية</label>
-                <select
-                  value={formData.priority}
-                  onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm"
-                >
-                  <option value="عالية">عالية</option>
-                  <option value="متوسطة">متوسطة</option>
-                  <option value="منخفضة">منخفضة</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">الحالة</label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm"
-                >
-                  <option value="active">نشط</option>
-                  <option value="on-hold">معلق</option>
-                  <option value="completed">مكتمل</option>
-                </select>
-              </div>
-            </div>
+            <Input placeholder="اسم المشروع" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+            <Textarea placeholder="وصف المشروع" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
           </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => { setShowAddProject(false); setEditingProject(null); resetForm(); }}>
-              إلغاء
-            </Button>
-            <Button onClick={handleAddProject} disabled={!formData.name.trim()}>
-              {editingProject ? "حفظ التغييرات" : "إنشاء المشروع"}
-            </Button>
-          </DialogFooter>
+          <DialogFooter><Button variant="outline" onClick={() => setShowAddProject(false)}>إلغاء</Button><Button onClick={handleAddProject}>{editingProject ? "حفظ" : "إضافة"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
