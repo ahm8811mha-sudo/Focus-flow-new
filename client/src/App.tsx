@@ -1,5 +1,4 @@
 import "./pro-consistency.css";
-import "./apple-system.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
