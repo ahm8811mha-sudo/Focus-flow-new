@@ -29,12 +29,21 @@ export default function FocusFlowOS() {
       .catch(() => setGeminiReady(false));
   }, []);
 
-  const overdue = useMemo(() => memory.tasks.filter((task) => task.dueDate && task.dueDate < today() && task.status !== 'done'), [memory.tasks]);
-  const urgent = useMemo(() => memory.tasks.filter((task) => task.status !== 'done' && (task.priority === 'urgent' || task.priority === 'high')), [memory.tasks]);
-  const topTasks = useMemo(() => memory.tasks.filter((task) => task.status !== 'done').slice(0, 5), [memory.tasks]);
+  const tasks = Array.isArray(memory.tasks) ? memory.tasks : [];
+  const projects = Array.isArray(memory.projects) ? memory.projects : [];
+  const overdue = useMemo(() => tasks.filter((task) => task.dueDate && task.dueDate < today() && task.status !== 'done'), [tasks]);
+  const urgent = useMemo(() => tasks.filter((task) => task.status !== 'done' && (task.priority === 'urgent' || task.priority === 'high')), [tasks]);
+  const topTasks = useMemo(() => tasks.filter((task) => task.status !== 'done').slice(0, 5), [tasks]);
 
   const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
-  const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } };
+  const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } } };
+
+  const statCards = [
+    { label: 'Google', href: '/system', value: googleReady ? 'متصل' : 'محلي', sub: 'Drive / Gmail / Calendar', icon: LayoutGrid },
+    { label: 'المهام', href: '/tasks', value: tasks.length, sub: `${urgent.length} عالية أو عاجلة`, icon: CheckCircle2 },
+    { label: 'المتأخر', href: '/tasks', value: overdue.length, sub: 'تحتاج تدخل اليوم', icon: AlertCircle, alert: overdue.length > 0 },
+    { label: 'المشاريع', href: '/projects', value: projects.length, sub: 'قيد المتابعة والتنفيذ', icon: FolderKanban },
+  ];
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#020202] text-slate-200 p-4 md:p-8 lg:pr-[110px] pb-24 lg:pb-8 font-sans" dir="rtl">
@@ -80,17 +89,12 @@ export default function FocusFlowOS() {
         </motion.section>
 
         <motion.section variants={item} className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: 'Google', value: googleReady ? 'متصل' : 'محلي', sub: 'Drive / Gmail / Calendar', icon: LayoutGrid },
-            { label: 'المهام', value: memory.tasks.length, sub: `${urgent.length} عالية أو عاجلة`, icon: CheckCircle2 },
-            { label: 'المتأخر', value: overdue.length, sub: 'تحتاج تدخل اليوم', icon: AlertCircle, alert: overdue.length > 0 },
-            { label: 'المشاريع', value: memory.projects.length, sub: 'قيد المتابعة والتنفيذ', icon: FolderKanban },
-          ].map((metric, i) => (
-            <div key={i} className="p-6 rounded-3xl border border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl hover:bg-white/[0.04] transition-colors flex flex-col gap-2 relative overflow-hidden group">
+          {statCards.map((metric, i) => (
+            <a key={i} href={metric.href} className="p-6 rounded-3xl border border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl hover:bg-white/[0.04] transition-colors flex flex-col gap-2 relative overflow-hidden group no-underline">
               <div className="flex justify-between items-start"><span className="text-cyan-400 text-[11px] font-black tracking-widest uppercase">{metric.label}</span><metric.icon className={`w-5 h-5 ${metric.alert ? 'text-rose-400' : 'text-white/30 group-hover:text-cyan-400'} transition-colors`} /></div>
               <strong className={`text-3xl md:text-4xl font-bold mt-2 ${metric.alert ? 'text-rose-400' : 'text-white'}`}>{metric.value}</strong>
               <small className="text-white/50 text-sm mt-auto pt-2">{metric.sub}</small>
-            </div>
+            </a>
           ))}
         </motion.section>
 
@@ -104,7 +108,7 @@ export default function FocusFlowOS() {
 
           <article className="p-8 rounded-[32px] border border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl flex flex-col h-full">
             <div className="flex items-center justify-between mb-6"><span className="text-cyan-400 text-xs font-black tracking-widest uppercase">Active Tasks</span><a href="/tasks" className="px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold hover:bg-cyan-500/30 transition-colors">مركز المهام</a></div>
-            <div className="flex flex-col gap-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">{topTasks.map((task) => <div key={task.id} className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group"><strong className="text-white text-sm block mb-1 group-hover:text-cyan-300 transition-colors">{task.title}</strong><small className="text-white/40 text-xs flex items-center gap-2"><Calendar className="w-3 h-3" /> {task.dueDate || 'بدون تاريخ'} <span className="w-1 h-1 rounded-full bg-white/20 mx-1" /> {task.priority}</small></div>)}{!topTasks.length && <div className="flex-1 flex items-center justify-center text-white/40 text-sm">لا توجد مهام مفتوحة حالياً.</div>}</div>
+            <div className="flex flex-col gap-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">{topTasks.map((task) => <a href="/tasks" key={task.id} className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group no-underline"><strong className="text-white text-sm block mb-1 group-hover:text-cyan-300 transition-colors">{task.title}</strong><small className="text-white/40 text-xs flex items-center gap-2"><Calendar className="w-3 h-3" /> {task.dueDate || 'بدون تاريخ'} <span className="w-1 h-1 rounded-full bg-white/20 mx-1" /> {task.priority}</small></a>)}{!topTasks.length && <div className="flex-1 flex items-center justify-center text-white/40 text-sm">لا توجد مهام مفتوحة حالياً.</div>}</div>
           </article>
 
           {modules.map((module) => <a key={module.href} href={module.href} className="p-8 rounded-[32px] border border-white/10 bg-[#0a0a0a]/40 backdrop-blur-xl hover:bg-white/[0.04] hover:border-cyan-500/30 transition-all hover:-translate-y-1 group flex flex-col"><div className="flex items-center gap-3 mb-6"><div className="p-2 rounded-xl bg-white/5 text-white/50 group-hover:text-cyan-400 group-hover:bg-cyan-500/10 transition-colors"><module.icon className="w-6 h-6" /></div><span className="text-cyan-400/80 text-[10px] font-black tracking-widest uppercase">{module.tag}</span></div><strong className="text-2xl font-bold text-white mb-2">{module.title}</strong><small className="text-white/50 text-sm leading-relaxed mt-auto">{module.desc}</small></a>)}
