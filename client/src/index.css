@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%;
+  --background: 210 20% 98%;
   --foreground: 222.2 84% 4.9%;
   --card: 0 0% 100%;
   --card-foreground: 222.2 84% 4.9%;
@@ -21,6 +21,12 @@
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
   --ring: 221.2 83.2% 53.3%;
+  --apple-bg: #f5f7fb;
+  --apple-surface: rgba(255,255,255,.78);
+  --apple-surface-strong: rgba(255,255,255,.92);
+  --apple-border: rgba(15,23,42,.10);
+  --apple-shadow: 0 24px 70px rgba(15,23,42,.10);
+  --apple-radius: 28px;
 }
 
 .dark {
@@ -42,17 +48,98 @@
   --border: 217.2 32.6% 17.5%;
   --input: 217.2 32.6% 17.5%;
   --ring: 217.2 91.2% 59.8%;
+  --apple-bg: #05070c;
+  --apple-surface: rgba(18,24,38,.72);
+  --apple-surface-strong: rgba(22,29,45,.88);
+  --apple-border: rgba(255,255,255,.12);
+  --apple-shadow: 0 28px 90px rgba(0,0,0,.38);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'Noto Sans Arabic', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Noto Sans Arabic', 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
   font-feature-settings: "rlig" 1, "calt" 1;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(59,130,246,.18), transparent 30%),
+    radial-gradient(circle at 92% 5%, rgba(168,85,247,.16), transparent 28%),
+    var(--apple-bg);
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* RTL Support */
 .rtl, .rtl * {
   direction: rtl;
   text-align: right;
+}
+
+/* Apple-style global surfaces */
+main,
+.page,
+.app-shell,
+.dashboard-shell,
+.agents-shell,
+.projects-shell {
+  background-color: transparent;
+}
+
+.card,
+.panel,
+.hero-card,
+.agent-tile,
+.project-tab,
+.session-card,
+.sidebar,
+.create-panel,
+.project-hero,
+.stage,
+.notice,
+.quick-actions,
+.result-box,
+.latest-card,
+.task-row,
+.action-card,
+.glass-card {
+  border: 1px solid var(--apple-border) !important;
+  background: var(--apple-surface) !important;
+  border-radius: var(--apple-radius) !important;
+  box-shadow: var(--apple-shadow) !important;
+  backdrop-filter: blur(22px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(160%) !important;
+}
+
+.hero-card,
+.project-hero {
+  background: linear-gradient(145deg, var(--apple-surface-strong), var(--apple-surface)) !important;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s ease, border-color .22s ease, background .22s ease;
+}
+
+button:not(:disabled):active,
+a:active {
+  transform: scale(.985);
+}
+
+button:not(:disabled):hover,
+a:hover,
+.card-hover:hover,
+.agent-tile:hover,
+.project-tab:hover,
+.stage:hover,
+.panel:hover {
+  transform: translateY(-3px);
 }
 
 /* Hover Effects */
@@ -62,8 +149,7 @@ body {
 
 .card-hover:hover {
   transform: translateY(-6px);
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 
-              0 8px 10px -6px rgb(0 0 0 / 0.1);
+  box-shadow: 0 24px 70px rgb(0 0 0 / 0.14);
 }
 
 /* Smooth Transitions */
@@ -76,9 +162,13 @@ body {
   transition: box-shadow 0.2s ease;
 }
 
-.focus-ring:focus {
+.focus-ring:focus,
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.24) !important;
+  border-color: rgba(59,130,246,.55) !important;
 }
 
 /* Loading States */
@@ -93,10 +183,19 @@ body {
 
 /* Beautiful Cards */
 .glass-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
+  background: var(--apple-surface) !important;
+  backdrop-filter: blur(22px) saturate(160%);
 }
 
 .dark .glass-card {
-  background: rgba(30, 30, 30, 0.7);
+  background: var(--apple-surface) !important;
+}
+
+.apple-title {
+  letter-spacing: -0.055em;
+  font-weight: 900;
+}
+
+.apple-muted {
+  color: hsl(var(--muted-foreground));
 }
