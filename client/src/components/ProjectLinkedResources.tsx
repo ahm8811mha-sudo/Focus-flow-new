@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { loadTables, saveTables, type InternalTable } from '@/lib/internalTables';
+import { createProjectFollowUpEvent, createProjectFollowUpTask, saveAgentResultAsProjectTable } from '@/lib/projectResourceActions';
 
 type LinkedTask = {
   id: string;
@@ -14,21 +15,25 @@ type LinkedTask = {
   [key: string]: any;
 };
 
+type AgentResultItem = {
+  id: string;
+  goal: string;
+  agentName: string;
+  status: string;
+  summary: string;
+  results?: string[];
+  failures?: string[];
+  drafts?: string[];
+  events?: string[];
+  tables?: string[];
+  tasks?: string[];
+  createdAt: string;
+};
+
 type ProjectLike = {
   id: string;
   name: string;
-  agentResults?: Array<{
-    id: string;
-    goal: string;
-    agentName: string;
-    status: string;
-    summary: string;
-    drafts?: string[];
-    events?: string[];
-    tables?: string[];
-    tasks?: string[];
-    createdAt: string;
-  }>;
+  agentResults?: AgentResultItem[];
 };
 
 type Props = {
@@ -64,6 +69,11 @@ function saveStoredTasks(items: LinkedTask[]) {
   localStorage.setItem(TASKS_KEY, JSON.stringify(asArray(items)));
 }
 
+function resultToRows(item: AgentResultItem) {
+  const rows = asArray<string>(item.results).map((value, index) => [index + 1, value, 'جديد']);
+  return rows.length ? rows : [[1, item.summary || item.goal, item.status || 'جديد']];
+}
+
 export default function ProjectLinkedResources({ project, tasks = [] }: Props) {
   const [tables, setTables] = useState<InternalTable[]>([]);
   const [localTasks, setLocalTasks] = useState<LinkedTask[]>([]);
@@ -89,6 +99,7 @@ export default function ProjectLinkedResources({ project, tasks = [] }: Props) {
   const linkedTasks = useMemo(() => asArray<LinkedTask>(sourceTasks).filter((task) => relatedToProject(task, project)), [sourceTasks, project]);
   const linkedEvents = useMemo(() => linkedTasks.filter(isCalendarTask), [linkedTasks]);
   const linkedTables = useMemo(() => asArray<InternalTable>(tables).filter((table) => relatedToProject(table, project)), [tables, project]);
+  const agentResults = useMemo(() => asArray<AgentResultItem>(project.agentResults).slice(0, 8), [project]);
   const linkedDrafts = useMemo(() => asArray(project.agentResults).filter((result) => asArray(result.drafts).length || /مسودة|بريد|إيميل|ايميل|رسالة/i.test(`${result.goal} ${result.summary}`)), [project]);
 
   function startTaskEdit(task: LinkedTask) {
@@ -127,6 +138,24 @@ export default function ProjectLinkedResources({ project, tasks = [] }: Props) {
     setNotice('تم تحديث الجدول المرتبط بالمشروع.');
   }
 
+  function saveResultTable(item: AgentResultItem) {
+    const table = saveAgentResultAsProjectTable({ project, title: `نتيجة ${item.goal}`, columns: ['#', 'المخرج', 'الحالة'], rows: resultToRows(item), source: item.agentName, notes: item.summary });
+    setTables([table, ...loadTables().filter((x) => x.id !== table.id)]);
+    setNotice('تم حفظ نتيجة الوكيل كجدول مرتبط بالمشروع.');
+  }
+
+  function createResultTask(item: AgentResultItem) {
+    const task = createProjectFollowUpTask({ project, title: `متابعة: ${item.goal}`, description: item.summary, dueDate: new Date().toISOString().slice(0, 10), priority: 'high' });
+    setLocalTasks([task, ...loadStoredTasks().filter((x) => x.id !== task.id)]);
+    setNotice('تم إنشاء مهمة متابعة مرتبطة بالمشروع.');
+  }
+
+  function createResultEvent(item: AgentResultItem) {
+    const task = createProjectFollowUpEvent({ project, title: `موعد متابعة: ${item.goal}`, description: item.summary, dueDate: new Date().toISOString().slice(0, 10), dueTime: '09:00' });
+    setLocalTasks([task, ...loadStoredTasks().filter((x) => x.id !== task.id)]);
+    setNotice('تم إنشاء موعد متابعة مرتبط بالمشروع.');
+  }
+
   return (
     <section className="panel" id="linked-resources">
       <div className="section-title">
@@ -134,6 +163,7 @@ export default function ProjectLinkedResources({ project, tasks = [] }: Props) {
         <a className="mini-link" href="/execution">فتح سجل التنفيذ</a>
       </div>
       {notice && <p className="resource-notice">{notice}</p>}
+      {agentResults.length ? <div className="agent-result-actions"><h4>تحويل نتائج الوكلاء إلى إجراءات</h4>{agentResults.map((item) => <div className="resource-row" key={item.id}><span>{item.goal}</span><small>{item.agentName} · {item.createdAt}</small><div className="inline-actions"><button onClick={() => saveResultTable(item)}>حفظ كجدول</button><button onClick={() => createResultTask(item)}>إنشاء مهمة متابعة</button><button onClick={() => createResultEvent(item)}>إنشاء موعد متابعة</button></div></div>)}</div> : null}
       <div className="resource-grid">
         <article className="resource-card">
           <div className="resource-head"><b>المهام المرتبطة</b><a href="/tasks">فتح المهام</a></div>
