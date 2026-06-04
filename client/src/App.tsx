@@ -12,6 +12,7 @@ import CalendarPage from "./pages/CalendarPage";
 import KanbanPage from "./pages/KanbanPage";
 import NotesPage from "./pages/NotesPage";
 import ProjectsPage from "./pages/ProjectsPage";
+import ProjectsPMPPage from "./pages/ProjectsPMPPage";
 import { ProjectDetailPage } from "./pages/ProjectDetailPage";
 import StatisticsPage from "./pages/StatisticsPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -52,8 +53,10 @@ function Router() {
       <Route path="/home-3d" component={Home3D} />
       <Route path="/classic" component={Home} />
       <Route path="/calendar" component={CalendarPage} />
-      <Route path="/projects" component={ProjectsPage} />
-      <Route path="/projects/:projectId" component={ProjectsPage} />
+      <Route path="/projects" component={ProjectsPMPPage} />
+      <Route path="/projects-pmp" component={ProjectsPMPPage} />
+      <Route path="/projects-legacy" component={ProjectsPage} />
+      <Route path="/projects/:projectId" component={ProjectsPMPPage} />
       <Route path="/kanban">{() => (<DashboardLayout><KanbanPage /></DashboardLayout>)}</Route>
       <Route path="/notes">{() => (<DashboardLayout><NotesPage /></DashboardLayout>)}</Route>
       <Route path="/statistics">{() => (<DashboardLayout><StatisticsPage /></DashboardLayout>)}</Route>
