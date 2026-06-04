@@ -42,6 +42,7 @@ type Props = {
 };
 
 const TASKS_KEY = 'focus-flow-tasks';
+const AUTO_KEY = 'focus-flow-project-auto-conversions';
 
 function asArray<T = any>(value: any): T[] {
   return Array.isArray(value) ? value : [];
@@ -69,9 +70,37 @@ function saveStoredTasks(items: LinkedTask[]) {
   localStorage.setItem(TASKS_KEY, JSON.stringify(asArray(items)));
 }
 
+function loadAutoIds(): string[] {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(AUTO_KEY) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveAutoIds(items: string[]) {
+  localStorage.setItem(AUTO_KEY, JSON.stringify(Array.from(new Set(items))));
+}
+
 function resultToRows(item: AgentResultItem) {
   const rows = asArray<string>(item.results).map((value, index) => [index + 1, value, 'جديد']);
   return rows.length ? rows : [[1, item.summary || item.goal, item.status || 'جديد']];
+}
+
+function shouldAutoTable(item: AgentResultItem) {
+  const text = `${item.goal} ${item.summary} ${item.agentName}`;
+  return asArray(item.tables).length > 0 || /سكرتير|حصر|جدول|جهات|عيادات|شركات|مراكز|مقارنة|مالي/i.test(text);
+}
+
+function shouldAutoTask(item: AgentResultItem) {
+  const text = `${item.goal} ${item.summary}`;
+  return asArray(item.tasks).length > 0 || /متابعة|إجراء|تنفيذ|راجع|الخطوة التالية/i.test(text);
+}
+
+function shouldAutoEvent(item: AgentResultItem) {
+  const text = `${item.goal} ${item.summary}`;
+  return asArray(item.events).length > 0 || /موعد|مواعيد|تقويم|تذكير|اتصال|زيارة/i.test(text);
 }
 
 export default function ProjectLinkedResources({ project, tasks = [] }: Props) {
@@ -155,6 +184,33 @@ export default function ProjectLinkedResources({ project, tasks = [] }: Props) {
     setLocalTasks([task, ...loadStoredTasks().filter((x) => x.id !== task.id)]);
     setNotice('تم إنشاء موعد متابعة مرتبط بالمشروع.');
   }
+
+  useEffect(() => {
+    const done = loadAutoIds();
+    const newIds: string[] = [];
+    let changed = false;
+    for (const item of agentResults) {
+      if (!item?.id || done.includes(item.id) || item.status === 'failed') continue;
+      if (shouldAutoTable(item)) {
+        saveAgentResultAsProjectTable({ project, title: `نتيجة ${item.goal}`, columns: ['#', 'المخرج', 'الحالة'], rows: resultToRows(item), source: item.agentName, notes: item.summary });
+        changed = true;
+      }
+      if (shouldAutoTask(item)) {
+        createProjectFollowUpTask({ project, title: `متابعة: ${item.goal}`, description: item.summary, dueDate: new Date().toISOString().slice(0, 10), priority: 'high' });
+        changed = true;
+      }
+      if (shouldAutoEvent(item)) {
+        createProjectFollowUpEvent({ project, title: `موعد متابعة: ${item.goal}`, description: item.summary, dueDate: new Date().toISOString().slice(0, 10), dueTime: '09:00' });
+        changed = true;
+      }
+      newIds.push(item.id);
+    }
+    if (newIds.length) saveAutoIds([...done, ...newIds]);
+    if (changed) {
+      refresh();
+      setNotice('تم تحويل نتائج الوكلاء تلقائيًا إلى مخرجات مرتبطة بالمشروع.');
+    }
+  }, [project.id, agentResults.length]);
 
   return (
     <section className="panel" id="linked-resources">
