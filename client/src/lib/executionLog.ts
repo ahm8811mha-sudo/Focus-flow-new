@@ -3,12 +3,21 @@ export type ExecutionStatus = 'running' | 'done' | 'failed' | 'needs_user';
 export type ExecutionEntry = {
   id: string;
   agentName: string;
+  agentId?: string;
   goal: string;
   status: ExecutionStatus;
   summary: string;
   results: string[];
   failures: string[];
   nextSteps: string[];
+  projectId?: string;
+  projectName?: string;
+  sourcePage?: string;
+  storageLocations?: string[];
+  createdTasks?: string[];
+  createdTables?: string[];
+  createdEvents?: string[];
+  createdDrafts?: string[];
   createdAt: string;
   updatedAt: string;
 };
@@ -21,14 +30,15 @@ function uid() {
 
 export function getExecutionLog(): ExecutionEntry[] {
   try {
-    return JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+    const parsed = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 }
 
 export function saveExecutionLog(items: ExecutionEntry[]) {
-  localStorage.setItem(LOG_KEY, JSON.stringify(items));
+  localStorage.setItem(LOG_KEY, JSON.stringify(Array.isArray(items) ? items : []));
 }
 
 export function addExecutionLog(input: Omit<ExecutionEntry, 'id' | 'createdAt' | 'updatedAt'>) {
@@ -37,6 +47,11 @@ export function addExecutionLog(input: Omit<ExecutionEntry, 'id' | 'createdAt' |
     id: uid(),
     createdAt: now,
     updatedAt: now,
+    storageLocations: input.storageLocations || [],
+    createdTasks: input.createdTasks || [],
+    createdTables: input.createdTables || [],
+    createdEvents: input.createdEvents || [],
+    createdDrafts: input.createdDrafts || [],
     ...input,
   };
   saveExecutionLog([entry, ...getExecutionLog()]);
