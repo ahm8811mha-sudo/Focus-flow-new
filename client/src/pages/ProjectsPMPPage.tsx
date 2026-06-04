@@ -4,6 +4,7 @@ import ProjectHeader from '@/components/projects/ProjectHeader';
 import ProjectStats from '@/components/projects/ProjectStats';
 import ProjectStageBridge from '@/components/projects/ProjectStageBridge';
 import ProjectLinkedTables from '@/components/projects/ProjectLinkedTables';
+import SecretaryCommandPanel from '@/components/projects/SecretaryCommandPanel';
 import ProjectLinkedResources from '@/components/ProjectLinkedResources';
 import { STORAGE_KEY, type ManagedProject, type ProjectAgent, type ProjectStage, type ProjectTask } from '@/components/projects/types';
 
@@ -94,6 +95,18 @@ export default function ProjectsPMPPage() {
     save(projects.map((p) => p.id !== activeId ? p : { ...p, stages: [...asArray<ProjectStage>(p.stages), { id: uid(), title: 'مرحلة PMP جديدة', owner, status: 'not_started', dueDate: today(), deliverable: 'مخرج قابل للقبول', notes: '' }] }));
   }
 
+  function handleSecretaryResult(summary: string, payload: any) {
+    const activeProject = projects.find((p) => p.id === activeId);
+    if (!activeProject) return;
+    const stamp = new Date().toLocaleString('ar-SA');
+    save(projects.map((p) => p.id !== activeId ? p : {
+      ...p,
+      executionLog: [`${stamp} — السكرتير الشامل — ${summary.split('\n')[0]}`, ...asArray<string>(p.executionLog)].slice(0, 30),
+      agentResults: [{ id: uid(), agentName: 'السكرتير الشامل', goal: payload.intent?.type || 'Secretary Automation', status: 'done', summary, results: payload.actions || [], tasks: payload.intent?.needsContacts ? ['1 مهمة'] : [], tables: payload.intent?.needsTable ? ['1 جدول'] : [], events: payload.intent?.needsSchedule ? ['1 موعد'] : [], drafts: payload.intent?.needsEmail ? ['1 مسودة'] : [], createdAt: stamp }, ...asArray<any>(p.agentResults)].slice(0, 50),
+    }));
+    setNotice('تم تشغيل السكرتير وحفظ التقرير داخل المشروع.');
+  }
+
   async function runWorkItem(kind: 'stage', stage: ProjectStage) {
     const activeProject = projects.find((p) => p.id === activeId);
     if (!activeProject) return;
@@ -116,7 +129,7 @@ export default function ProjectsPMPPage() {
       <header className="hero-card"><a className="back" href="/">← الرئيسية</a><a className="agents" href="/projects-legacy">النسخة القديمة</a><span className="eyebrow">PMP MODE</span><h1>مشاريع PMP</h1><p>نسخة مفككة وآمنة لربط مراحل المشروع بنموذج PMP الفعلي.</p></header>
       {notice && <section className="notice">{notice}</section>}
       <section className="create-panel"><input value={name} onChange={(e) => setName(e.target.value)} placeholder="اسم المشروع" /><textarea value={objective} onChange={(e) => setObjective(e.target.value)} placeholder="الهدف" /><textarea value={scope} onChange={(e) => setScope(e.target.value)} placeholder="النطاق" /><button onClick={createProject}>+ إنشاء مشروع PMP</button></section>
-      <section className="layout"><aside className="sidebar">{projects.map((p) => <button key={p.id} className={`project-tab ${p.id === active?.id ? 'active' : ''}`} onClick={() => setActiveId(p.id)}><span>{p.name}</span><small>{progress(p)}%</small></button>)}</aside><section className="workspace">{active ? <><ProjectHeader name={active.name} objective={active.objective} progress={progress(active)} /><ProjectStats stages={active.stages.length} tasks={asArray(active.projectTasks).length} linkedTasks={linkedTasks.length} agentResults={asArray(active.agentResults).length} /><ProjectLinkedResources project={active} tasks={tasks} /><ProjectLinkedTables project={active} /><ProjectStageBridge stages={active.stages} busyItem={busyItem} updateStage={updateStage} runWorkItem={runWorkItem} addStage={addStage} /><section className="panel"><h3>نطاق المشروع</h3><p>{active.scope}</p></section></> : <section className="panel">لا يوجد مشروع.</section>}</section></section>
+      <section className="layout"><aside className="sidebar">{projects.map((p) => <button key={p.id} className={`project-tab ${p.id === active?.id ? 'active' : ''}`} onClick={() => setActiveId(p.id)}><span>{p.name}</span><small>{progress(p)}%</small></button>)}</aside><section className="workspace">{active ? <><ProjectHeader name={active.name} objective={active.objective} progress={progress(active)} /><ProjectStats stages={active.stages.length} tasks={asArray(active.projectTasks).length} linkedTasks={linkedTasks.length} agentResults={asArray(active.agentResults).length} /><SecretaryCommandPanel project={active} onResult={handleSecretaryResult} /><ProjectLinkedResources project={active} tasks={tasks} /><ProjectLinkedTables project={active} /><ProjectStageBridge stages={active.stages} busyItem={busyItem} updateStage={updateStage} runWorkItem={runWorkItem} addStage={addStage} /><section className="panel"><h3>نطاق المشروع</h3><p>{active.scope}</p></section></> : <section className="panel">لا يوجد مشروع.</section>}</section></section>
     </main>
   );
 }
