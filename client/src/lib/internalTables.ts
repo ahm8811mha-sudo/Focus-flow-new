@@ -5,6 +5,10 @@ export type InternalTable = {
   rows: any[][];
   source?: string;
   notes?: string;
+  projectId?: string;
+  projectName?: string;
+  executionId?: string;
+  agentId?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -21,14 +25,15 @@ function now() {
 
 export function loadTables(): InternalTable[] {
   try {
-    return JSON.parse(localStorage.getItem(TABLES_KEY) || '[]');
+    const parsed = JSON.parse(localStorage.getItem(TABLES_KEY) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 }
 
 export function saveTables(items: InternalTable[]) {
-  localStorage.setItem(TABLES_KEY, JSON.stringify(items));
+  localStorage.setItem(TABLES_KEY, JSON.stringify(Array.isArray(items) ? items : []));
 }
 
 export function upsertTable(input: Partial<InternalTable> & { title: string; columns: string[]; rows: any[][] }) {
@@ -41,6 +46,10 @@ export function upsertTable(input: Partial<InternalTable> & { title: string; col
     rows: input.rows.length ? input.rows : [[input.title, input.notes || 'تم إنشاء الجدول داخل النظام']],
     source: input.source || existing?.source || 'Agent',
     notes: input.notes || existing?.notes || '',
+    projectId: input.projectId || existing?.projectId || '',
+    projectName: input.projectName || existing?.projectName || '',
+    executionId: input.executionId || existing?.executionId || '',
+    agentId: input.agentId || existing?.agentId || '',
     createdAt: existing?.createdAt || now(),
     updatedAt: now(),
   };
