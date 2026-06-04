@@ -1,0 +1,149 @@
+.projects-shell {
+  --panel: rgba(15, 23, 42, 0.72);
+  --panel-2: rgba(255, 255, 255, 0.08);
+  --line: rgba(255, 255, 255, 0.13);
+  --muted: #cbd5e1;
+  --accent: #67e8f9;
+  --blue: #60a5fa;
+  min-height: 100vh;
+  padding: 18px 14px 100px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(34, 211, 238, 0.18), transparent 34%),
+    radial-gradient(circle at 88% 0%, rgba(124, 58, 237, 0.22), transparent 32%),
+    linear-gradient(180deg, #030305 0%, #07111f 58%, #030305 100%);
+  color: #f8fafc;
+  font-family: Cairo, -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, system-ui, sans-serif;
+}
+
+.projects-shell * { box-sizing: border-box; }
+
+.projects-shell .hero-card,
+.projects-shell .create-panel,
+.projects-shell .sidebar,
+.projects-shell .project-tab,
+.projects-shell .project-hero,
+.projects-shell .stats-grid a,
+.projects-shell .panel,
+.projects-shell .stage,
+.projects-shell .notice,
+.projects-shell .resource-card,
+.projects-shell .quick-actions,
+.projects-shell .result-box {
+  border: 1px solid var(--line);
+  background: linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.045));
+  border-radius: 30px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter: blur(22px);
+}
+
+.projects-shell .hero-card {
+  max-width: 1180px;
+  margin: auto;
+  text-align: center;
+  padding: 32px;
+  display: grid;
+  gap: 12px;
+  position: relative;
+}
+
+.projects-shell .back,
+.projects-shell .agents,
+.projects-shell .mini-link {
+  color: #bfdbfe;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.projects-shell .back { justify-self: start; }
+.projects-shell .agents { position: absolute; left: 26px; top: 26px; }
+.projects-shell .eyebrow { color: var(--accent); letter-spacing: .22em; font-size: 12px; font-weight: 950; text-transform: uppercase; }
+.projects-shell .hero-card h1 { font-size: clamp(46px, 11vw, 88px); letter-spacing: -.06em; margin: 0; line-height: .95; }
+.projects-shell .hero-card p,
+.projects-shell .panel p,
+.projects-shell .project-tab small,
+.projects-shell .resource-row small,
+.projects-shell .stage small { color: var(--muted); line-height: 1.85; }
+
+.projects-shell .notice,
+.projects-shell .create-panel {
+  max-width: 1180px;
+  margin: 14px auto 0;
+  padding: 16px;
+}
+
+.projects-shell .notice { border-color: rgba(34,197,94,.35); color: #bbf7d0; background: rgba(22,101,52,.18); }
+.projects-shell .create-panel { display: grid; grid-template-columns: 1fr 1.2fr 1.2fr auto; gap: 10px; align-items: stretch; }
+.projects-shell input,
+.projects-shell textarea,
+.projects-shell select {
+  width: 100%; border: 1px solid rgba(255,255,255,.13); border-radius: 18px;
+  background: rgba(15,23,42,.78); color: #fff; padding: 13px 14px; font: inherit; outline: none;
+}
+.projects-shell textarea { min-height: 58px; resize: vertical; }
+.projects-shell input:focus,
+.projects-shell textarea:focus,
+.projects-shell select:focus { border-color: rgba(103,232,249,.75); box-shadow: 0 0 0 4px rgba(103,232,249,.12); }
+.projects-shell button {
+  border: 0; border-radius: 18px; min-height: 46px; padding: 0 16px;
+  background: linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed); color: #fff; font-weight: 950; cursor: pointer;
+}
+.projects-shell button:disabled { opacity: .55; cursor: not-allowed; }
+
+.projects-shell .layout { max-width: 1180px; margin: 16px auto; display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+.projects-shell .sidebar { padding: 14px; position: sticky; top: 14px; display: grid; gap: 10px; }
+.projects-shell .project-tab { color:#fff; text-align:right; padding:14px; display:grid; gap:6px; cursor:pointer; border-radius: 22px; }
+.projects-shell .project-tab.active { outline: 2px solid rgba(103,232,249,.75); background: linear-gradient(145deg, rgba(14,165,233,.22), rgba(124,58,237,.12)); }
+.projects-shell .workspace { display:grid; gap:16px; }
+
+.projects-shell .project-hero { padding: 24px; display: flex; justify-content: space-between; gap: 20px; align-items: center; }
+.projects-shell .project-hero h2 { font-size: clamp(34px, 7vw, 62px); margin: 4px 0; letter-spacing: -.05em; line-height: 1; }
+.projects-shell .score { text-align: center; min-width: 120px; border-radius: 24px; background: rgba(103,232,249,.09); padding: 16px; }
+.projects-shell .score b { font-size: 50px; line-height: 1; }
+.projects-shell .score small { color: var(--accent); display:block; margin-top: 6px; }
+.projects-shell .stats-grid { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; }
+.projects-shell .stats-grid a { padding:18px; display:grid; gap:8px; text-decoration:none; color:#fff; border-radius: 24px; }
+.projects-shell .stats-grid b { font-size: 30px; }
+.projects-shell .stats-grid span { color: var(--muted); }
+
+.projects-shell .panel { padding: 18px; scroll-margin-top: 18px; }
+.projects-shell .section-title { display:flex; justify-content:space-between; align-items:center; gap: 12px; margin-bottom: 10px; }
+.projects-shell .section-title h3 { margin: 0; }
+.projects-shell .secretary-command-panel { border-color: rgba(103,232,249,.32); background: linear-gradient(145deg, rgba(8,145,178,.18), rgba(255,255,255,.05)); }
+.projects-shell .secretary-command-panel textarea { min-height: 110px; margin: 10px 0; }
+
+.projects-shell .resource-grid,
+.projects-shell .pmp-grid,
+.projects-shell .pmp-kpis,
+.projects-shell .stage-meta { display:grid; grid-template-columns: repeat(2,1fr); gap:10px; }
+.projects-shell .resource-card,
+.projects-shell .stage { padding:14px; border-radius: 24px; }
+.projects-shell .resource-row,
+.projects-shell .result-box { border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:10px; background:rgba(15,23,42,.55); display:grid; gap:6px; margin-top:8px; }
+.projects-shell .stage-head { display:grid; grid-template-columns: 1fr 220px; gap:10px; }
+.projects-shell .pmp-kpis span { background:rgba(255,255,255,.08); border-radius:14px; padding:8px; color:#dbeafe; }
+.projects-shell .health-red { border-color:rgba(239,68,68,.7); }
+.projects-shell .health-yellow { border-color:rgba(245,158,11,.7); }
+.projects-shell .health-green { border-color:rgba(34,197,94,.7); }
+.projects-shell .health-gray { border-color:rgba(148,163,184,.5); }
+.projects-shell .result-table { overflow:auto; margin-top:12px; border-radius: 18px; }
+.projects-shell .result-table table { width:100%; border-collapse:collapse; min-width:760px; }
+.projects-shell .result-table th,
+.projects-shell .result-table td { border:1px solid rgba(255,255,255,.12); padding:10px; text-align:right; vertical-align:top; }
+.projects-shell .result-table th { color:var(--accent); background:rgba(59,130,246,.14); }
+.projects-shell .table-row-actions { display:flex; flex-wrap:wrap; gap:6px; }
+.projects-shell .table-row-actions button { min-height:34px; border-radius:12px; padding:0 10px; font-size:12px; }
+.projects-shell .linked-table-list { display:grid; gap:12px; }
+
+@media(max-width: 980px) {
+  .projects-shell .layout,
+  .projects-shell .create-panel,
+  .projects-shell .stats-grid,
+  .projects-shell .resource-grid,
+  .projects-shell .pmp-grid,
+  .projects-shell .pmp-kpis,
+  .projects-shell .stage-meta,
+  .projects-shell .stage-head { grid-template-columns: 1fr; }
+  .projects-shell .sidebar { position: static; }
+  .projects-shell .agents { position: static; justify-self: start; }
+  .projects-shell .project-hero { flex-direction: column; align-items: stretch; }
+}
