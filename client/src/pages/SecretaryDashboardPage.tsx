@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { loadSecretaryContacts, updateContactStatus, addContactHistory, type SecretaryContactStatus } from '@/lib/secretary/contactCRM';
 import { loadSecretaryEmailDrafts } from '@/lib/secretary/communications';
 import { generateSecretaryExecutiveReport } from '@/lib/secretary/reportGenerator';
+import './secretary-dashboard.css';
 
 const statusLabels: Record<SecretaryContactStatus, string> = {
   new: 'جديد',
@@ -41,7 +42,6 @@ export default function SecretaryDashboardPage() {
 
   return (
     <main className="secretary-shell" dir="rtl">
-      <style>{styles}</style>
       <header className="hero-card"><a className="back" href="/projects">← المشاريع</a><span className="eyebrow">SECRETARY CRM</span><h1>لوحة السكرتير</h1><p>إدارة الجهات، المسودات، سجل التواصل، والتقارير التنفيذية المرتبطة بالمشاريع.</p></header>
       <section className="toolbar"><select value={selectedProjectId} onChange={(e) => setProjectId(e.target.value)}>{projects.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select><button onClick={() => setVersion((x) => x + 1)}>تحديث</button></section>
       <section className="stats-grid"><article><b>{filteredContacts.length}</b><span>جهات</span></article><article><b>{filteredDrafts.length}</b><span>مسودات</span></article><article><b>{filteredContacts.filter((x) => x.status === 'waiting_reply').length}</b><span>بانتظار الرد</span></article><article><b>{filteredContacts.filter((x) => !x.email || !x.phone).length}</b><span>بيانات ناقصة</span></article></section>
@@ -51,5 +51,3 @@ export default function SecretaryDashboardPage() {
     </main>
   );
 }
-
-const styles = `body{margin:0;background:#030305;color:#f8fafc;font-family:Cairo,-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif}.secretary-shell{min-height:100vh;padding:18px 14px 100px;background:radial-gradient(circle at 15% 0%,rgba(34,211,238,.16),transparent 30%),radial-gradient(circle at 90% 0%,rgba(124,58,237,.18),transparent 30%),#020202}.hero-card,.toolbar,.panel,.stats-grid article,.card{border:1px solid rgba(255,255,255,.13);background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border-radius:30px;box-shadow:0 24px 80px rgba(0,0,0,.34);backdrop-filter:blur(22px)}.hero-card{max-width:1180px;margin:auto;text-align:center;padding:30px;display:grid;gap:12px}.back{color:#bfdbfe;text-decoration:none;justify-self:start}.eyebrow{color:#67e8f9;letter-spacing:.22em;font-size:12px;font-weight:950}.hero-card h1{font-size:clamp(46px,10vw,82px);margin:0;letter-spacing:-.05em}.hero-card p,.card p,.panel p,small{color:#cbd5e1;line-height:1.8}.toolbar,.panel,.stats-grid{max-width:1180px;margin:16px auto}.toolbar{padding:14px;display:flex;gap:10px}select,button{border:1px solid rgba(255,255,255,.13);border-radius:18px;background:rgba(15,23,42,.72);color:#fff;padding:12px;font:inherit}button{background:linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed);font-weight:900;border:0}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stats-grid article{padding:18px}.stats-grid b{font-size:38px}.stats-grid span{display:block;color:#67e8f9}.panel{padding:18px}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.card{padding:14px}.card-head{display:flex;justify-content:space-between;gap:10px}.actions{display:flex;gap:8px;flex-wrap:wrap}pre{white-space:pre-wrap;color:#dbeafe;background:rgba(15,23,42,.55);border-radius:16px;padding:12px;overflow:auto}@media(max-width:900px){.stats-grid,.cards{grid-template-columns:1fr}.toolbar{display:grid}}`;
