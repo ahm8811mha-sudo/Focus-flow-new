@@ -130,9 +130,9 @@ export function ProjectDetailsPage() {
   const progressPercentage = project.statistics?.progress || 0;
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="mx-auto w-full max-w-full overflow-x-hidden px-4 py-4 pb-24 sm:container sm:py-8">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-4">
           <div className="text-4xl">{project.icon}</div>
           <div>
@@ -258,7 +258,7 @@ export function ProjectDetailsPage() {
 
       {/* Main Tabs */}
       <Tabs defaultValue="members" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-2 sm:grid-cols-4">
           <TabsTrigger value="members">الأعضاء</TabsTrigger>
           <TabsTrigger value="activities">الأنشطة</TabsTrigger>
           <TabsTrigger value="comments">التعليقات</TabsTrigger>
