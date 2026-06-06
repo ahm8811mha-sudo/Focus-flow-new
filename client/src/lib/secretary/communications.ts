@@ -233,3 +233,4 @@ export function createSecretaryAppointmentReminder(args: {
 
   return reminder;
 }
+// Force Vercel rebuild after secretary communication exports fix
