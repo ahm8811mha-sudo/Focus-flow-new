@@ -1,1 +1,856 @@
-.ffos-shell{min-height:100vh;overflow:hidden;background:#f5f5f7;color:#1d1d1f;padding:16px 16px 98px;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Cairo,Inter,system-ui,sans-serif}.dark .ffos-shell,.ffos-shell{background:radial-gradient(circle at 18% 0%,rgba(0,113,227,.16),transparent 34%),radial-gradient(circle at 86% 0%,rgba(175,82,222,.14),transparent 32%),#0b0b0f;color:#f5f5f7}.ffos-bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:64px 64px;pointer-events:none}.ffos-glow-a{position:absolute;top:-140px;right:8%;width:520px;height:520px;background:rgba(0,113,227,.22);border-radius:999px;filter:blur(140px);pointer-events:none}.ffos-glow-b{position:absolute;bottom:-180px;left:-6%;width:480px;height:480px;background:rgba(175,82,222,.18);border-radius:999px;filter:blur(140px);pointer-events:none}.ffos-side{display:none}.ffos-container{max-width:1220px;margin:auto;position:relative;z-index:1;display:grid;gap:18px}.ffos-hero,.ffos-status,.ffos-metric,.ffos-feature,.ffos-task-panel,.ffos-task,.ffos-module,.ffos-daily,.ffos-agent-card,.ffos-project-card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.075);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);box-shadow:0 24px 80px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.12);border-radius:34px}.ffos-hero{display:grid;gap:22px;padding:26px;overflow:hidden}.ffos-eyebrow{color:#64d2ff;letter-spacing:.18em;font-size:12px;font-weight:800;text-transform:uppercase;display:flex;gap:8px;align-items:center}.ffos-title{font-size:clamp(42px,11vw,82px);line-height:.96;font-weight:800;color:#fff;letter-spacing:-.065em;margin:0}.ffos-gradient{text-fill-color:transparent;-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#64d2ff,#0a84ff,#bf5af2);-webkit-background-clip:text;background-clip:text}.ffos-lead{color:rgba(245,245,247,.66);font-size:18px;line-height:1.85;max-width:740px;margin:0}.ffos-actions{display:flex;gap:12px;flex-wrap:wrap}.ffos-btn{height:54px;padding:0 22px;border-radius:18px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff;font-weight:750;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);transition:.22s cubic-bezier(.2,.8,.2,1)}.ffos-btn.primary{background:#0a84ff;box-shadow:0 14px 38px rgba(10,132,255,.34);border-color:rgba(255,255,255,.16)}.ffos-btn:hover,.ffos-module:hover,.ffos-agent-card:hover,.ffos-project-card:hover{transform:translateY(-3px)}.ffos-status{padding:24px;display:grid;gap:14px;background:rgba(0,0,0,.28);position:relative;overflow:hidden}.ffos-status:after{content:"";position:absolute;inset:auto -40px -60px auto;width:190px;height:190px;border-radius:999px;background:rgba(48,209,88,.18);filter:blur(45px)}.ffos-status-title{color:#64d2ff;font-size:12px;font-weight:850;letter-spacing:.14em;text-transform:uppercase}.ffos-status strong{font-size:32px;color:#fff;letter-spacing:-.03em}.ffos-status small{color:rgba(245,245,247,.56);line-height:1.7}.ffos-dot{width:16px;height:16px;border-radius:999px;background:#ff9f0a;box-shadow:0 0 22px rgba(255,159,10,.45);position:relative;z-index:1}.ffos-dot.ok{background:#30d158;box-shadow:0 0 24px rgba(48,209,88,.55)}.ffos-metrics,.ffos-main-grid,.ffos-agents,.ffos-projects,.ffos-modules{display:grid;gap:14px}.ffos-metrics{grid-template-columns:repeat(2,1fr)}.ffos-metric{padding:20px;text-decoration:none;color:#fff;display:grid;gap:8px;transition:.22s}.ffos-metric-head{display:flex;justify-content:space-between;gap:12px}.ffos-metric span,.ffos-module-tag,.ffos-feature-tag,.ffos-section-kicker{color:#64d2ff;font-size:11px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}.ffos-metric strong{font-size:34px;letter-spacing:-.04em}.ffos-metric small,.ffos-module small,.ffos-feature p,.ffos-task small,.ffos-agent-card small,.ffos-project-card small{color:rgba(245,245,247,.56);line-height:1.7}.ffos-metric.alert strong{color:#ff453a}.ffos-main-grid{grid-template-columns:1fr}.ffos-feature{padding:26px;display:grid;gap:14px}.ffos-feature h2{font-size:30px;line-height:1.2;color:#fff;margin:0;letter-spacing:-.035em}.ffos-command{margin-top:10px;padding:16px;border-radius:20px;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.07);color:rgba(245,245,247,.84);display:flex;align-items:center;gap:10px}.ffos-daily{padding:24px;display:grid;gap:14px;background:linear-gradient(145deg,rgba(10,132,255,.18),rgba(255,255,255,.06))}.ffos-daily h2{font-size:28px;margin:0;color:#fff;letter-spacing:-.035em}.ffos-daily-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ffos-daily-item{padding:14px;border-radius:20px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.08)}.ffos-daily-item b{display:block;color:#fff;font-size:28px;letter-spacing:-.04em}.ffos-daily-item span{color:rgba(245,245,247,.58);font-size:12px}.ffos-agent-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.ffos-agent-card{padding:18px;text-decoration:none;color:#fff;display:grid;gap:8px;transition:.22s}.ffos-agent-card b{font-size:20px}.ffos-agent-status{width:10px;height:10px;border-radius:99px;background:#30d158;box-shadow:0 0 18px rgba(48,209,88,.65)}.ffos-task-panel{padding:26px}.ffos-task-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.ffos-task-list{display:grid;gap:10px;max-height:360px;overflow:auto}.ffos-task{padding:14px;text-decoration:none;color:#fff;border-radius:20px;box-shadow:none;background:rgba(255,255,255,.055)}.ffos-task strong{display:block;font-size:14px;margin-bottom:6px}.ffos-empty{min-height:120px;display:grid;place-items:center;color:rgba(245,245,247,.45)}.ffos-projects{grid-template-columns:1fr}.ffos-project-card{padding:18px;text-decoration:none;color:#fff}.ffos-project-card b{display:block;font-size:18px;margin-bottom:10px}.ffos-progress{height:8px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin:12px 0}.ffos-progress span{display:block;height:100%;width:42%;background:linear-gradient(90deg,#64d2ff,#0a84ff);border-radius:99px}.ffos-modules{grid-template-columns:1fr}.ffos-module{padding:22px;text-decoration:none;color:#fff;display:grid;gap:12px;transition:.22s;border-radius:28px}.ffos-module-icon{width:42px;height:42px;border-radius:15px;background:rgba(255,255,255,.07);display:grid;place-items:center;color:rgba(245,245,247,.62)}.ffos-module strong{font-size:22px;letter-spacing:-.02em}.ffos-bottom-nav{position:fixed;bottom:20px;left:16px;right:16px;padding:8px;border-radius:28px;border:1px solid rgba(255,255,255,.1);background:rgba(22,22,23,.82);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);box-shadow:0 20px 60px rgba(0,0,0,.45);z-index:50;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.ffos-bottom-nav a{height:54px;border-radius:18px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;font-size:11px;font-weight:800}@media(min-width:768px){.ffos-metrics{grid-template-columns:repeat(4,1fr)}.ffos-main-grid{grid-template-columns:1.4fr 1fr}.ffos-agents{grid-template-columns:1fr 1fr}.ffos-projects{grid-template-columns:repeat(2,1fr)}.ffos-modules{grid-template-columns:repeat(3,1fr)}}@media(min-width:1024px){.ffos-shell{padding:32px 110px 32px 32px}.ffos-side{display:flex;position:fixed;right:24px;top:24px;bottom:24px;width:72px;flex-direction:column;gap:14px;padding:12px;border:1px solid rgba(255,255,255,.1);background:rgba(22,22,23,.72);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border-radius:28px;box-shadow:0 24px 80px rgba(0,0,0,.34);z-index:50}.ffos-logo{height:48px;border-radius:16px;background:#0a84ff;display:grid;place-items:center;font-weight:850;color:#fff}.ffos-side-links{display:grid;gap:10px;margin-top:12px}.ffos-side-links a{height:46px;border-radius:15px;background:rgba(255,255,255,.07);display:grid;place-items:center;color:rgba(245,245,247,.62);text-decoration:none;font-size:11px;font-weight:800}.ffos-side-links a:hover{color:#fff;background:rgba(255,255,255,.12)}.ffos-hero{grid-template-columns:1fr 330px;padding:42px}.ffos-bottom-nav{display:none}}
+/* FocusFlowOS - Responsive Design */
+
+.ffos-shell {
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: radial-gradient(circle at 18% 0%, rgba(0, 113, 227, 0.16), transparent 34%),
+    radial-gradient(circle at 86% 0%, rgba(175, 82, 222, 0.14), transparent 32%),
+    #0b0b0f;
+  color: #f5f5f7;
+  padding: 16px 16px 98px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Cairo, Inter, system-ui, sans-serif;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.dark .ffos-shell,
+.ffos-shell {
+  background: radial-gradient(circle at 18% 0%, rgba(0, 113, 227, 0.16), transparent 34%),
+    radial-gradient(circle at 86% 0%, rgba(175, 82, 222, 0.14), transparent 32%),
+    #0b0b0f;
+  color: #f5f5f7;
+}
+
+.ffos-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 64px 64px;
+  pointer-events: none;
+}
+
+.ffos-glow-a {
+  position: absolute;
+  top: -140px;
+  right: 8%;
+  width: 520px;
+  height: 520px;
+  background: rgba(0, 113, 227, 0.22);
+  border-radius: 999px;
+  filter: blur(140px);
+  pointer-events: none;
+}
+
+.ffos-glow-b {
+  position: absolute;
+  bottom: -180px;
+  left: -6%;
+  width: 480px;
+  height: 480px;
+  background: rgba(175, 82, 222, 0.18);
+  border-radius: 999px;
+  filter: blur(140px);
+  pointer-events: none;
+}
+
+.ffos-side {
+  display: none;
+}
+
+.ffos-container {
+  max-width: 1220px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 18px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Hero section and cards */
+.ffos-hero,
+.ffos-status,
+.ffos-metric,
+.ffos-feature,
+.ffos-task-panel,
+.ffos-task,
+.ffos-module,
+.ffos-daily,
+.ffos-agent-card,
+.ffos-project-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.075);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border-radius: 34px;
+  box-sizing: border-box;
+}
+
+/* Hero */
+.ffos-hero {
+  display: grid;
+  gap: 16px;
+  padding: 20px 18px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.ffos-eyebrow {
+  color: #64d2ff;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ffos-title {
+  font-size: clamp(28px, 8vw, 64px);
+  line-height: 0.96;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.065em;
+  margin: 0;
+  word-break: break-word;
+}
+
+.ffos-gradient {
+  text-fill-color: transparent;
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(90deg, #64d2ff, #0a84ff, #bf5af2);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.ffos-lead {
+  color: rgba(245, 245, 247, 0.66);
+  font-size: clamp(14px, 3vw, 18px);
+  line-height: 1.65;
+  max-width: 100%;
+  margin: 0;
+}
+
+.ffos-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ffos-btn {
+  height: 48px;
+  padding: 0 18px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 750;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 14px;
+  -webkit-appearance: none;
+}
+
+.ffos-btn:active,
+.ffos-btn:hover {
+  transform: translateY(-3px);
+}
+
+.ffos-btn.primary {
+  background: #0a84ff;
+  box-shadow: 0 14px 38px rgba(10, 132, 255, 0.34);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Status card */
+.ffos-status {
+  padding: 20px;
+  display: grid;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  position: relative;
+  overflow: hidden;
+}
+
+.ffos-status::after {
+  content: "";
+  position: absolute;
+  inset: auto -40px -60px auto;
+  width: 190px;
+  height: 190px;
+  border-radius: 999px;
+  background: rgba(48, 209, 88, 0.18);
+  filter: blur(45px);
+}
+
+.ffos-status-title {
+  color: #64d2ff;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ffos-status strong {
+  font-size: 28px;
+  color: #fff;
+  letter-spacing: -0.03em;
+  display: block;
+}
+
+.ffos-status small {
+  color: rgba(245, 245, 247, 0.56);
+  line-height: 1.7;
+}
+
+.ffos-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #ff9f0a;
+  box-shadow: 0 0 22px rgba(255, 159, 10, 0.45);
+  position: relative;
+  z-index: 1;
+}
+
+.ffos-dot.ok {
+  background: #30d158;
+  box-shadow: 0 0 24px rgba(48, 209, 88, 0.55);
+}
+
+/* Metrics grid */
+.ffos-metrics,
+.ffos-main-grid,
+.ffos-agents,
+.ffos-projects,
+.ffos-modules {
+  display: grid;
+  gap: 14px;
+}
+
+.ffos-metrics {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.ffos-metric {
+  padding: 18px;
+  text-decoration: none;
+  color: #fff;
+  display: grid;
+  gap: 8px;
+  transition: 0.22s;
+}
+
+.ffos-metric-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ffos-metric span,
+.ffos-module-tag,
+.ffos-feature-tag,
+.ffos-section-kicker {
+  color: #64d2ff;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.ffos-metric strong {
+  font-size: 32px;
+  letter-spacing: -0.04em;
+}
+
+.ffos-metric small,
+.ffos-module small,
+.ffos-feature p,
+.ffos-task small,
+.ffos-agent-card small,
+.ffos-project-card small {
+  color: rgba(245, 245, 247, 0.56);
+  line-height: 1.7;
+}
+
+.ffos-metric.alert strong {
+  color: #ff453a;
+}
+
+/* Main grid */
+.ffos-main-grid {
+  grid-template-columns: 1fr;
+}
+
+.ffos-feature {
+  padding: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.ffos-feature h2 {
+  font-size: 26px;
+  line-height: 1.2;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.035em;
+}
+
+.ffos-command {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: rgba(245, 245, 247, 0.84);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+/* Daily section */
+.ffos-daily {
+  padding: 20px;
+  display: grid;
+  gap: 12px;
+  background: linear-gradient(145deg, rgba(10, 132, 255, 0.18), rgba(255, 255, 255, 0.06));
+}
+
+.ffos-daily h2 {
+  font-size: 24px;
+  margin: 0;
+  color: #fff;
+  letter-spacing: -0.035em;
+}
+
+.ffos-daily-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.ffos-daily-item {
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ffos-daily-item b {
+  display: block;
+  color: #fff;
+  font-size: 24px;
+  letter-spacing: -0.04em;
+}
+
+.ffos-daily-item span {
+  color: rgba(245, 245, 247, 0.58);
+  font-size: 12px;
+}
+
+/* Task panel */
+.ffos-task-panel {
+  padding: 22px;
+}
+
+.ffos-task-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.ffos-task-list {
+  display: grid;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ffos-task {
+  padding: 12px;
+  text-decoration: none;
+  color: #fff;
+  border-radius: 18px;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.ffos-task strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.ffos-empty {
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  color: rgba(245, 245, 247, 0.45);
+}
+
+/* Projects */
+.ffos-projects {
+  grid-template-columns: 1fr;
+}
+
+.ffos-project-card {
+  padding: 16px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.ffos-project-card b {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.ffos-progress {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.ffos-progress span {
+  display: block;
+  height: 100%;
+  width: 42%;
+  background: linear-gradient(90deg, #64d2ff, #0a84ff);
+  border-radius: 999px;
+}
+
+/* Modules grid */
+.ffos-modules {
+  grid-template-columns: 1fr;
+}
+
+.ffos-module {
+  padding: 18px;
+  text-decoration: none;
+  color: #fff;
+  display: grid;
+  gap: 10px;
+  transition: 0.22s;
+  border-radius: 24px;
+}
+
+.ffos-module-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.07);
+  display: grid;
+  place-items: center;
+  color: rgba(245, 245, 247, 0.62);
+}
+
+.ffos-module strong {
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+/* Agent cards */
+.ffos-agent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.ffos-agent-card {
+  padding: 16px;
+  text-decoration: none;
+  color: #fff;
+  display: grid;
+  gap: 8px;
+  transition: 0.22s;
+}
+
+.ffos-agent-card b {
+  font-size: 18px;
+}
+
+.ffos-agent-status {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #30d158;
+  box-shadow: 0 0 18px rgba(48, 209, 88, 0.65);
+}
+
+/* Bottom navigation */
+.ffos-bottom-nav {
+  position: fixed;
+  bottom: 20px;
+  left: 16px;
+  right: 16px;
+  padding: 8px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(22, 22, 23, 0.82);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  z-index: 50;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  max-width: calc(100% - 32px);
+}
+
+.ffos-bottom-nav a {
+  height: 48px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 800;
+  transition: 0.2s;
+}
+
+.ffos-bottom-nav a:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ===========================
+   Tablet: 768px and up
+   =========================== */
+
+@media (min-width: 768px) {
+  .ffos-shell {
+    padding: 24px 28px 32px;
+  }
+
+  .ffos-hero {
+    padding: 32px 28px;
+    gap: 18px;
+  }
+
+  .ffos-metrics {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .ffos-main-grid {
+    grid-template-columns: 1.4fr 1fr;
+  }
+
+  .ffos-agents {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ffos-projects {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ffos-modules {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ffos-btn {
+    height: 50px;
+    padding: 0 22px;
+  }
+}
+
+/* ===========================
+   Desktop: 1024px and up
+   =========================== */
+
+@media (min-width: 1024px) {
+  .ffos-shell {
+    padding: 32px 110px 32px 32px;
+  }
+
+  .ffos-side {
+    display: flex;
+    position: fixed;
+    right: 24px;
+    top: 24px;
+    bottom: 24px;
+    width: 72px;
+    flex-direction: column;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(22, 22, 23, 0.72);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border-radius: 28px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+    z-index: 50;
+  }
+
+  .ffos-logo {
+    height: 48px;
+    border-radius: 16px;
+    background: #0a84ff;
+    display: grid;
+    place-items: center;
+    font-weight: 850;
+    color: #fff;
+  }
+
+  .ffos-side-links {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .ffos-side-links a {
+    height: 46px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.07);
+    display: grid;
+    place-items: center;
+    color: rgba(245, 245, 247, 0.62);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .ffos-side-links a:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .ffos-hero {
+    grid-template-columns: 1fr 330px;
+    padding: 42px;
+  }
+
+  .ffos-bottom-nav {
+    display: none;
+  }
+}
+
+/* ===========================
+   Mobile: 320px - 639px
+   =========================== */
+
+@media (max-width: 639px) {
+  .ffos-shell {
+    padding: 12px 12px 90px;
+  }
+
+  .ffos-hero {
+    padding: 14px 14px;
+    gap: 12px;
+  }
+
+  .ffos-title {
+    font-size: clamp(22px, 6vw, 36px);
+  }
+
+  .ffos-lead {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .ffos-actions {
+    gap: 8px;
+  }
+
+  .ffos-btn {
+    height: 44px;
+    padding: 0 14px;
+    font-size: 13px;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .ffos-status {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .ffos-status strong {
+    font-size: 22px;
+  }
+
+  .ffos-daily {
+    padding: 16px;
+  }
+
+  .ffos-daily h2 {
+    font-size: 18px;
+  }
+
+  .ffos-daily-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ffos-daily-item {
+    padding: 10px;
+  }
+
+  .ffos-daily-item b {
+    font-size: 20px;
+  }
+
+  .ffos-metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .ffos-metric {
+    padding: 12px;
+  }
+
+  .ffos-metric strong {
+    font-size: 24px;
+  }
+
+  .ffos-main-grid,
+  .ffos-agents,
+  .ffos-projects,
+  .ffos-modules {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .ffos-feature,
+  .ffos-task-panel {
+    padding: 14px;
+  }
+
+  .ffos-feature h2 {
+    font-size: 18px;
+  }
+
+  .ffos-task-list {
+    max-height: 280px;
+  }
+
+  .ffos-module {
+    padding: 14px;
+    gap: 8px;
+  }
+
+  .ffos-module strong {
+    font-size: 15px;
+  }
+
+  .ffos-container {
+    gap: 12px;
+  }
+
+  .ffos-bg-glow {
+    display: none;
+  }
+}
+
+/* ===========================
+   Small phones: 320px - 420px
+   =========================== */
+
+@media (max-width: 420px) {
+  .ffos-shell {
+    padding: 10px 10px 80px;
+  }
+
+  .ffos-hero {
+    padding: 12px 10px;
+    gap: 10px;
+  }
+
+  .ffos-title {
+    font-size: clamp(18px, 5vw, 28px);
+  }
+
+  .ffos-lead {
+    font-size: 12px;
+  }
+
+  .ffos-btn {
+    height: 40px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .ffos-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .ffos-metric {
+    padding: 10px;
+  }
+
+  .ffos-bottom-nav {
+    bottom: 12px;
+    left: 10px;
+    right: 10px;
+    gap: 6px;
+  }
+
+  .ffos-bottom-nav a {
+    height: 44px;
+    font-size: 10px;
+  }
+}
+
+/* ===========================
+   Landscape mode
+   =========================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .ffos-shell {
+    padding-top: 12px;
+    padding-bottom: 60px;
+  }
+
+  .ffos-hero {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .ffos-title {
+    font-size: clamp(18px, 4vw, 24px);
+  }
+
+  .ffos-lead {
+    display: none;
+  }
+
+  .ffos-container {
+    gap: 10px;
+  }
+}
+
+/* ===========================
+   Accessibility & Performance
+   =========================== */
+
+@supports (scrollbar-gutter: stable) {
+  .ffos-task-list {
+    scrollbar-gutter: stable;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ffos-btn,
+  .ffos-module,
+  .ffos-agent-card,
+  .ffos-project-card {
+    transition: none;
+  }
+}
