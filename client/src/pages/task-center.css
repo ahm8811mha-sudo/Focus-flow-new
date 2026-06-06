@@ -1,1 +1,628 @@
-.tasks-shell{min-height:100vh;padding:18px 14px 100px;background:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px),radial-gradient(circle at 15% 0%,rgba(34,211,238,.18),transparent 30%),radial-gradient(circle at 85% 0%,rgba(124,58,237,.22),transparent 32%),#020202;background-size:3rem 3rem,3rem 3rem,auto,auto,auto;color:#f8fafc;font-family:Cairo,-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif}.tasks-shell *{box-sizing:border-box}.tasks-shell .hero-card,.tasks-shell .panel,.tasks-shell .stats-grid a,.tasks-shell .toolbar,.tasks-shell .column,.tasks-shell .task-card{border:1px solid rgba(255,255,255,.13);background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.045));border-radius:30px;box-shadow:0 28px 90px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(22px)}.tasks-shell .hero-card{max-width:1180px;margin:auto;position:relative;display:grid;gap:12px;text-align:center;padding:32px;overflow:hidden}.tasks-shell .back,.tasks-shell .hub{position:relative;color:#bfdbfe;text-decoration:none;font-weight:900}.tasks-shell .back{justify-self:start}.tasks-shell .hub{position:absolute;left:28px;top:28px}.tasks-shell .eyebrow{color:#67e8f9;letter-spacing:.22em;text-transform:uppercase;font-weight:950;font-size:12px}.tasks-shell .hero-card h1{margin:0;font-size:clamp(44px,10vw,82px);letter-spacing:-.055em;line-height:.95}.tasks-shell .hero-card p{max-width:760px;margin:auto;color:#cbd5e1;line-height:1.8}.tasks-shell .hero-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.tasks-shell .hero-actions button,.tasks-shell .hero-actions a,.tasks-shell .toolbar button,.tasks-shell .primary{min-height:50px;border:0;border-radius:18px;padding:0 18px;font-weight:950;color:#fff;background:linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed);display:grid;place-items:center;text-decoration:none;cursor:pointer}.tasks-shell .stats-grid{max-width:1180px;margin:16px auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.tasks-shell .stats-grid a{padding:18px;display:grid;gap:8px;color:#fff;text-decoration:none}.tasks-shell .stats-grid span{color:#67e8f9;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:950}.tasks-shell .stats-grid strong{font-size:36px}.tasks-shell .stats-grid small,.tasks-shell .task-card p,.tasks-shell .task-card small,.tasks-shell .empty{color:#cbd5e1}.tasks-shell .stats-grid .danger strong{color:#fb7185}.tasks-shell .toolbar{max-width:1180px;margin:0 auto 16px;display:grid;grid-template-columns:1fr auto;gap:10px;padding:14px}.tasks-shell input,.tasks-shell textarea,.tasks-shell select{width:100%;border:1px solid rgba(255,255,255,.14);border-radius:20px;background:rgba(15,23,42,.76);color:#fff;padding:15px 16px;outline:none;font:inherit}.tasks-shell input:focus,.tasks-shell textarea:focus,.tasks-shell select:focus{border-color:rgba(103,232,249,.75);box-shadow:0 0 0 4px rgba(103,232,249,.12)}.tasks-shell textarea{min-height:120px;line-height:1.6}.tasks-shell .panel{max-width:1180px;margin:0 auto 16px;padding:18px}.tasks-shell .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px}.tasks-shell .ghost{background:rgba(255,255,255,.08)!important}.tasks-shell .form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0}.tasks-shell .kanban-grid{max-width:1180px;margin:auto;display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:12px;overflow-x:auto;padding-bottom:10px}.tasks-shell .column{padding:14px;display:grid;gap:10px;align-content:start;min-height:260px}.tasks-shell .column-head{display:flex;justify-content:space-between;align-items:center}.tasks-shell .column-head h2{font-size:17px;margin:0}.tasks-shell .column-head span{background:rgba(103,232,249,.14);border:1px solid rgba(103,232,249,.25);color:#67e8f9;border-radius:999px;padding:6px 10px;font-weight:900}.tasks-shell .task-card{padding:14px;border-radius:22px;box-shadow:none;background:rgba(15,23,42,.58)}.tasks-shell .task-card b{font-size:16px}.tasks-shell .task-card p{margin:8px 0}.tasks-shell .task-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.tasks-shell .task-actions button{border:0;border-radius:14px;padding:9px 12px;font-weight:900;color:#fff;background:rgba(59,130,246,.22);cursor:pointer}.tasks-shell .danger-btn{background:rgba(239,68,68,.25)!important}@media(max-width:860px){.tasks-shell{padding:12px 10px 90px}.tasks-shell .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tasks-shell .toolbar{grid-template-columns:1fr}.tasks-shell .form-grid{grid-template-columns:1fr 1fr}.tasks-shell .kanban-grid{grid-template-columns:1fr}.tasks-shell .hub{position:static;justify-self:start}}
+/* Main shell container */
+.tasks-shell {
+  min-height: 100vh;
+  padding: 18px 14px 100px;
+  background: 
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    radial-gradient(circle at 15% 0%, rgba(34, 211, 238, 0.18), transparent 30%),
+    radial-gradient(circle at 85% 0%, rgba(124, 58, 237, 0.22), transparent 32%),
+    #020202;
+  background-size: 3rem 3rem, 3rem 3rem, auto, auto, auto;
+  color: #f8fafc;
+  font-family: Cairo, -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, system-ui, sans-serif;
+}
+
+.tasks-shell * {
+  box-sizing: border-box;
+}
+
+/* Cards and panels styling */
+.tasks-shell .hero-card,
+.tasks-shell .panel,
+.tasks-shell .stats-grid a,
+.tasks-shell .toolbar,
+.tasks-shell .column,
+.tasks-shell .task-card {
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04));
+  border-radius: 30px;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(22px);
+}
+
+/* Hero section */
+.tasks-shell .hero-card {
+  max-width: 100%;
+  margin: 0 auto;
+  position: relative;
+  display: grid;
+  gap: 12px;
+  text-align: center;
+  padding: 24px 16px;
+  overflow: hidden;
+}
+
+.tasks-shell .back,
+.tasks-shell .hub {
+  position: relative;
+  color: #bfdbfe;
+  text-decoration: none;
+  font-weight: 900;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.tasks-shell .back:hover,
+.tasks-shell .hub:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.tasks-shell .back {
+  justify-self: start;
+}
+
+.tasks-shell .hub {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.tasks-shell .eyebrow {
+  color: #67e8f9;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 950;
+  font-size: 12px;
+}
+
+.tasks-shell .hero-card h1 {
+  margin: 0;
+  font-size: clamp(28px, 8vw, 64px);
+  letter-spacing: -0.055em;
+  line-height: 0.95;
+}
+
+.tasks-shell .hero-card p {
+  max-width: 100%;
+  margin: 0 auto;
+  color: #cbd5e1;
+  line-height: 1.8;
+  font-size: clamp(14px, 4vw, 16px);
+}
+
+/* Hero actions */
+.tasks-shell .hero-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.tasks-shell .hero-actions button,
+.tasks-shell .hero-actions a,
+.tasks-shell .toolbar button,
+.tasks-shell .primary {
+  min-height: 48px;
+  border: 0;
+  border-radius: 16px;
+  padding: 0 16px;
+  font-weight: 950;
+  color: #fff;
+  background: linear-gradient(135deg, #06b6d4, #2563eb, #7c3aed);
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.tasks-shell .hero-actions button:hover,
+.tasks-shell .toolbar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(37, 99, 235, 0.32);
+}
+
+/* Stats grid */
+.tasks-shell .stats-grid {
+  max-width: 100%;
+  margin: 16px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.tasks-shell .stats-grid a {
+  padding: 16px;
+  display: grid;
+  gap: 6px;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.22s ease;
+}
+
+.tasks-shell .stats-grid a:hover {
+  transform: translateY(-4px);
+  border-color: rgba(34, 211, 238, 0.32);
+  background: linear-gradient(145deg, rgba(34, 211, 238, 0.08), rgba(124, 58, 237, 0.05));
+}
+
+.tasks-shell .stats-grid span {
+  color: #67e8f9;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 950;
+}
+
+.tasks-shell .stats-grid strong {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.tasks-shell .stats-grid small,
+.tasks-shell .task-card p,
+.tasks-shell .task-card small,
+.tasks-shell .empty {
+  color: #cbd5e1;
+}
+
+.tasks-shell .stats-grid .danger strong {
+  color: #fb7185;
+}
+
+/* Toolbar */
+.tasks-shell .toolbar {
+  max-width: 100%;
+  margin: 0 auto 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 12px;
+}
+
+.tasks-shell input,
+.tasks-shell textarea,
+.tasks-shell select {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #fff;
+  padding: 12px 14px;
+  outline: none;
+  font: inherit;
+  font-size: 14px;
+}
+
+.tasks-shell input:focus,
+.tasks-shell textarea:focus,
+.tasks-shell select:focus {
+  border-color: rgba(103, 232, 249, 0.75);
+  box-shadow: 0 0 0 4px rgba(103, 232, 249, 0.12);
+}
+
+.tasks-shell input::placeholder,
+.tasks-shell textarea::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.tasks-shell textarea {
+  min-height: 100px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+/* Panel (form panel) */
+.tasks-shell .panel {
+  max-width: 100%;
+  margin: 0 auto 16px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+/* Section titles */
+.tasks-shell .section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tasks-shell .ghost {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Form grid */
+.tasks-shell .form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin: 10px 0;
+}
+
+/* Kanban grid - Main container */
+.tasks-shell .kanban-grid {
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 0 10px 0;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Kanban columns */
+.tasks-shell .column {
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-height: 240px;
+  flex: 0 0 auto;
+  min-width: 280px;
+  width: 100%;
+}
+
+@supports (scrollbar-gutter: stable) {
+  .tasks-shell .kanban-grid {
+    scrollbar-gutter: stable;
+  }
+}
+
+.tasks-shell .column-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.tasks-shell .column-head h2 {
+  font-size: 16px;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.tasks-shell .column-head span {
+  background: rgba(103, 232, 249, 0.14);
+  border: 1px solid rgba(103, 232, 249, 0.25);
+  color: #67e8f9;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-weight: 900;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Task card */
+.tasks-shell .task-card {
+  padding: 12px;
+  border-radius: 20px;
+  box-shadow: none;
+  background: rgba(15, 23, 42, 0.58);
+  transition: all 0.22s ease;
+  cursor: grab;
+  user-select: none;
+}
+
+.tasks-shell .task-card:active {
+  cursor: grabbing;
+}
+
+.tasks-shell .task-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(34, 211, 238, 0.32);
+  background: linear-gradient(145deg, rgba(34, 211, 238, 0.08), rgba(124, 58, 237, 0.05));
+}
+
+.tasks-shell .task-card b {
+  font-size: 14px;
+  display: block;
+}
+
+.tasks-shell .task-card p {
+  margin: 6px 0;
+  font-size: 13px;
+}
+
+.tasks-shell .task-card small {
+  font-size: 12px;
+  display: block;
+  margin-top: 8px;
+}
+
+.tasks-shell .task-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.tasks-shell .task-actions button {
+  border: 0;
+  border-radius: 12px;
+  padding: 7px 10px;
+  font-weight: 900;
+  color: #fff;
+  background: rgba(59, 130, 246, 0.22);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.tasks-shell .task-actions button:hover {
+  background: rgba(59, 130, 246, 0.32);
+  transform: scale(1.05);
+}
+
+.tasks-shell .danger-btn {
+  background: rgba(239, 68, 68, 0.25) !important;
+}
+
+.tasks-shell .danger-btn:hover {
+  background: rgba(239, 68, 68, 0.35) !important;
+}
+
+/* Tablet: 768px and up */
+@media (min-width: 768px) {
+  .tasks-shell {
+    padding: 24px 20px 100px;
+  }
+
+  .tasks-shell .hero-card {
+    padding: 32px 24px;
+  }
+
+  .tasks-shell .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 24px auto;
+  }
+
+  .tasks-shell .column {
+    min-width: 300px;
+  }
+
+  .tasks-shell input,
+  .tasks-shell textarea,
+  .tasks-shell select {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+}
+
+/* Desktop: 1024px and up */
+@media (min-width: 1024px) {
+  .tasks-shell {
+    padding: 32px 32px 100px;
+  }
+
+  .tasks-shell .hero-card {
+    padding: 40px 36px;
+  }
+
+  .tasks-shell .kanban-grid {
+    grid-template-columns: repeat(5, minmax(280px, 1fr));
+  }
+
+  .tasks-shell .column {
+    min-width: 280px;
+    width: auto;
+  }
+
+  .tasks-shell .form-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Mobile: 320px - 639px */
+@media (max-width: 639px) {
+  .tasks-shell {
+    padding: 12px 10px 90px;
+  }
+
+  .tasks-shell .hero-card {
+    padding: 16px 12px;
+    gap: 10px;
+  }
+
+  .tasks-shell .hero-card h1 {
+    font-size: clamp(24px, 6vw, 40px);
+  }
+
+  .tasks-shell .hero-card p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .tasks-shell .back,
+  .tasks-shell .hub {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .tasks-shell .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 12px auto;
+  }
+
+  .tasks-shell .stats-grid strong {
+    font-size: 24px;
+  }
+
+  .tasks-shell .toolbar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 10px;
+    margin: 0 auto 12px;
+  }
+
+  .tasks-shell .toolbar button {
+    width: 100%;
+  }
+
+  .tasks-shell .hero-actions {
+    gap: 8px;
+  }
+
+  .tasks-shell .hero-actions button,
+  .tasks-shell .hero-actions a {
+    flex: 1;
+    min-width: 120px;
+    font-size: 13px;
+    padding: 0 12px;
+  }
+
+  .tasks-shell .panel {
+    padding: 12px;
+    margin: 0 auto 12px;
+  }
+
+  .tasks-shell input,
+  .tasks-shell textarea,
+  .tasks-shell select {
+    padding: 11px 12px;
+    font-size: 16px;
+    border-radius: 14px;
+  }
+
+  .tasks-shell textarea {
+    min-height: 80px;
+  }
+
+  .tasks-shell .form-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  /* Kanban grid - stacked on mobile */
+  .tasks-shell .kanban-grid {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tasks-shell .column {
+    min-width: 100%;
+    width: 100%;
+    min-height: auto;
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .tasks-shell .column-head {
+    position: sticky;
+    top: 0;
+    background: rgba(15, 23, 42, 0.95);
+    padding: 8px;
+    margin: -12px -12px 8px -12px;
+    z-index: 10;
+    border-radius: 16px;
+  }
+
+  .tasks-shell .task-card {
+    padding: 10px;
+    font-size: 13px;
+    border-radius: 16px;
+  }
+
+  .tasks-shell .task-card b {
+    font-size: 13px;
+  }
+
+  .tasks-shell .task-card p {
+    font-size: 12px;
+    margin: 4px 0;
+  }
+
+  .tasks-shell .task-actions button {
+    padding: 6px 10px;
+    font-size: 11px;
+    border-radius: 10px;
+  }
+}
+
+/* Small phones: 320px - 420px */
+@media (max-width: 420px) {
+  .tasks-shell {
+    padding: 10px 8px 80px;
+  }
+
+  .tasks-shell .hero-card {
+    padding: 12px 10px;
+    gap: 8px;
+  }
+
+  .tasks-shell .hero-card h1 {
+    font-size: clamp(20px, 5vw, 32px);
+  }
+
+  .tasks-shell .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .tasks-shell .stats-grid a {
+    padding: 12px;
+  }
+
+  .tasks-shell .toolbar {
+    padding: 8px;
+  }
+
+  .tasks-shell .panel {
+    padding: 10px;
+  }
+
+  .tasks-shell input,
+  .tasks-shell textarea,
+  .tasks-shell select {
+    padding: 10px 11px;
+    font-size: 16px;
+  }
+
+  .tasks-shell .column {
+    max-height: 50vh;
+  }
+
+  .tasks-shell .task-card {
+    padding: 8px;
+  }
+}
+
+/* Landscape orientation */
+@media (max-height: 500px) {
+  .tasks-shell {
+    padding-top: 12px;
+    padding-bottom: 60px;
+  }
+
+  .tasks-shell .hero-card {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .tasks-shell .hero-card h1 {
+    font-size: clamp(20px, 4vw, 28px);
+    margin: 0;
+  }
+
+  .tasks-shell .column {
+    min-height: auto;
+    max-height: 70vh;
+  }
+}
