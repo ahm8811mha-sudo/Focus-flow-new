@@ -39,14 +39,15 @@ export default function FocusFlowOS() {
 
   const tasks = Array.isArray(memory.tasks) ? memory.tasks : [];
   const projects = Array.isArray(memory.projects) ? memory.projects : [];
-  const overdue = useMemo(() => tasks.filter((task) => task.dueDate && task.dueDate < today() && task.status !== 'done'), [tasks]);
-  const urgent = useMemo(() => tasks.filter((task) => task.status !== 'done' && (task.priority === 'urgent' || task.priority === 'high')), [tasks]);
-  const todayTasks = useMemo(() => tasks.filter((task) => task.dueDate === today() && task.status !== 'done'), [tasks]);
-  const openTasks = useMemo(() => tasks.filter((task) => task.status !== 'done'), [tasks]);
+  
+  const overdue = useMemo(() => tasks.filter((task: any) => task.dueDate && task.dueDate < today() && task.status !== 'done'), [tasks]);
+  const urgent = useMemo(() => tasks.filter((task: any) => task.status !== 'done' && (task.priority === 'urgent' || task.priority === 'high')), [tasks]);
+  const todayTasks = useMemo(() => tasks.filter((task: any) => task.dueDate === today() && task.status !== 'done'), [tasks]);
+  const openTasks = useMemo(() => tasks.filter((task: any) => task.status !== 'done'), [tasks]);
   const topTasks = useMemo(() => openTasks.slice(0, 5), [openTasks]);
 
-  const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.08 } } };
-  const item = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 260, damping: 24 } } };
+  const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+  const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } } };
 
   const statCards = [
     { label: 'Google', href: '/system', value: googleReady ? 'متصل' : 'محلي', sub: 'Drive / Gmail / Calendar', icon: LayoutGrid },
@@ -69,37 +70,133 @@ export default function FocusFlowOS() {
       </aside>
 
       <motion.div variants={container} initial="hidden" animate="show" className="ffos-container">
+        {/* Hero Section - محسن */}
         <motion.section variants={item} className="ffos-hero">
           <div>
-            <span className="ffos-eyebrow"><Sparkles size={16} /> PERSONAL AI EXECUTION OS</span>
+            <span className="ffos-eyebrow"><Sparkles size={18} /> PERSONAL AI EXECUTION OS</span>
             <h1 className="ffos-title">Focus Flow<br /><span className="ffos-gradient">لوحة تنفيذ يومية.</span></h1>
-            <p className="ffos-lead">ابدأ من هنا: ماذا عليك اليوم، ماذا نفذ الوكلاء، ما حالة المشاريع، وما صحة النظام.</p>
-            <div className="ffos-actions"><a className="ffos-btn primary" href="/projects">تشغيل داخل مشروع</a><a className="ffos-btn" href="/secretary">لوحة السكرتير</a><a className="ffos-btn" href="/execution">سجل التنفيذ</a></div>
+            <p className="ffos-lead">ابدأ من هنا: ماذا عليك اليوم، ماذا نفذ الوكلاء، حالة المشاريع، وصحة النظام.</p>
+            
+            <div className="ffos-actions">
+              <a className="ffos-btn primary" href="/projects">تشغيل داخل مشروع</a>
+              <a className="ffos-btn" href="/secretary">لوحة السكرتير</a>
+              <a className="ffos-btn" href="/execution">سجل التنفيذ</a>
+            </div>
           </div>
-          <div className="ffos-status"><span className="ffos-status-title">System Health</span><strong>{geminiReady ? 'Gemini متصل' : 'Gemini غير مفعل'}</strong><small>{googleReady ? 'Google Drive متصل' : 'محلي أولًا · اربط Google من النظام'}</small><div className={`ffos-dot ${geminiReady ? 'ok' : ''}`} /></div>
+
+          <div className="ffos-status">
+            <span className="ffos-status-title">System Health</span>
+            <strong>{geminiReady ? 'Gemini متصل' : 'Gemini غير مفعل'}</strong>
+            <small>{googleReady ? 'Google Drive متصل ✓' : 'محلي أولًا · اربط Google من النظام'}</small>
+            <div className={`ffos-dot ${geminiReady ? 'ok' : ''}`} />
+          </div>
         </motion.section>
 
+        {/* Daily Brief */}
         <motion.section variants={item} className="ffos-daily">
-          <span className="ffos-section-kicker">Daily Executive Brief</span><h2>اليوم لديك</h2>
-          <div className="ffos-daily-grid"><div className="ffos-daily-item"><b>{urgent.length}</b><span>عالية أو عاجلة</span></div><div className="ffos-daily-item"><b>{todayTasks.length}</b><span>مجدولة اليوم</span></div><div className="ffos-daily-item"><b>{overdue.length}</b><span>متأخرة</span></div></div>
-          <p className="ffos-lead">اقتراح الوكيل: ابدأ بالمهام العاجلة، ثم افتح المشاريع لتشغيل السكرتير داخل سياق واضح.</p>
+          <span className="ffos-section-kicker">Daily Executive Brief</span>
+          <h2>اليوم لديك</h2>
+          <div className="ffos-daily-grid">
+            <div className="ffos-daily-item"><b>{urgent.length}</b><span>عالية أو عاجلة</span></div>
+            <div className="ffos-daily-item"><b>{todayTasks.length}</b><span>مجدولة اليوم</span></div>
+            <div className="ffos-daily-item"><b>{overdue.length}</b><span>متأخرة</span></div>
+          </div>
+          <p className="ffos-lead">اقتراح الوكيل: ابدأ بالمهام العاجلة ثم افتح المشاريع.</p>
         </motion.section>
 
-        <motion.section variants={item} className="ffos-metrics">{statCards.map((metric, i) => <a key={i} href={metric.href} className={`ffos-metric ${metric.alert ? 'alert' : ''}`}><div className="ffos-metric-head"><span>{metric.label}</span><metric.icon size={20} /></div><strong>{metric.value}</strong><small>{metric.sub}</small></a>)}</motion.section>
+        {/* Stats */}
+        <motion.section variants={item} className="ffos-metrics">
+          {statCards.map((metric, i) => (
+            <a key={i} href={metric.href} className={`ffos-metric ${metric.alert ? 'alert' : ''}`}>
+              <div className="ffos-metric-head">
+                <span>{metric.label}</span>
+                <metric.icon size={22} />
+              </div>
+              <strong>{metric.value}</strong>
+              <small>{metric.sub}</small>
+            </a>
+          ))}
+        </motion.section>
 
+        {/* Main Grid */}
         <motion.section variants={item} className="ffos-main-grid">
-          <article className="ffos-feature"><span className="ffos-feature-tag">Command Center</span><h2>اطلب تنفيذ، وشوف النتيجة في سجل واحد.</h2><p>الوكلاء ينشئون مهام ومواعيد وجداول وجهات اتصال، ثم يظهر ملخص التنفيذ في سجل التنفيذ.</p><div className="ffos-command"><Terminal size={18} /> مثال: احصر جهات، أنشئ جدول، وجدول مواعيد الاتصال...</div></article>
-          <article className="ffos-task-panel"><div className="ffos-task-head"><span className="ffos-section-kicker">Active Tasks</span><a className="ffos-btn" href="/tasks">فتح</a></div><div className="ffos-task-list">{topTasks.map((task) => <a href="/tasks" key={task.id} className="ffos-task"><strong>{task.title}</strong><small><Calendar size={13} /> {task.dueDate || 'بدون تاريخ'} · {task.priority}</small></a>)}{!topTasks.length && <div className="ffos-empty">لا توجد مهام مفتوحة حالياً.</div>}</div></article>
+          <article className="ffos-feature">
+            <span className="ffos-feature-tag">Command Center</span>
+            <h2>اطلب تنفيذ، وشوف النتيجة في سجل واحد.</h2>
+            <p>الوكلاء ينشئون مهام ومواعيد وجداول وجهات اتصال، ثم يظهر ملخص التنفيذ.</p>
+            <div className="ffos-command">
+              <Terminal size={18} /> مثال: احصر جهات، أنشئ جدول، وجدول مواعيد الاتصال...
+            </div>
+          </article>
+
+          <article className="ffos-task-panel">
+            <div className="ffos-task-head">
+              <span className="ffos-section-kicker">Active Tasks</span>
+              <a className="ffos-btn" href="/tasks">فتح الكانبان</a>
+            </div>
+            <div className="ffos-task-list">
+              {topTasks.map((task: any) => (
+                <a href="/tasks" key={task.id} className="ffos-task">
+                  <strong>{task.title}</strong>
+                  <small>
+                    <Calendar size={13} /> {task.dueDate || 'بدون تاريخ'} · {task.priority}
+                  </small>
+                </a>
+              ))}
+              {!topTasks.length && <div className="ffos-empty">لا توجد مهام مفتوحة حالياً. أضف مهمة جديدة!</div>}
+            </div>
+          </article>
         </motion.section>
 
-        <motion.section variants={item} className="ffos-agents">{agents.map((agent) => <a href={agent.href} key={agent.title} className="ffos-agent-card"><div className="ffos-agent-status" /><b>{agent.title}</b><small>{agent.desc}</small></a>)}</motion.section>
+        {/* Agents */}
+        <motion.section variants={item} className="ffos-agents">
+          {agents.map((agent) => (
+            <a href={agent.href} key={agent.title} className="ffos-agent-card">
+              <div className="ffos-agent-status" />
+              <b>{agent.title}</b>
+              <small>{agent.desc}</small>
+            </a>
+          ))}
+        </motion.section>
 
-        <motion.section variants={item} className="ffos-projects">{projects.slice(0, 4).map((project: any) => <a href="/projects" key={project.id || project.name} className="ffos-project-card"><b>{project.name || project.title || 'مشروع بدون اسم'}</b><small>{project.status || 'قيد المتابعة'}</small><div className="ffos-progress"><span /></div></a>)}{!projects.length && <a href="/projects" className="ffos-project-card"><b>لا توجد مشاريع محفوظة</b><small>أنشئ مشروع PMP وشغّل السكرتير داخله.</small><div className="ffos-progress"><span /></div></a>}</motion.section>
+        {/* Projects */}
+        <motion.section variants={item} className="ffos-projects">
+          {projects.slice(0, 4).map((project: any) => (
+            <a href="/projects" key={project.id || project.name} className="ffos-project-card">
+              <b>{project.name || project.title || 'مشروع بدون اسم'}</b>
+              <small>{project.status || 'قيد المتابعة'}</small>
+              <div className="ffos-progress"><span /></div>
+            </a>
+          ))}
+          {!projects.length && (
+            <a href="/projects" className="ffos-project-card">
+              <b>لا توجد مشاريع محفوظة</b>
+              <small>أنشئ مشروع PMP وشغّل السكرتير داخله.</small>
+              <div className="ffos-progress"><span /></div>
+            </a>
+          )}
+        </motion.section>
 
-        <motion.section variants={item} className="ffos-modules">{modules.map((module) => <a key={module.href} href={module.href} className="ffos-module"><div className="ffos-module-icon"><module.icon size={22} /></div><span className="ffos-module-tag">{module.tag}</span><strong>{module.title}</strong><small>{module.desc}</small></a>)}</motion.section>
+        {/* Modules */}
+        <motion.section variants={item} className="ffos-modules">
+          {modules.map((module) => (
+            <a key={module.href} href={module.href} className="ffos-module">
+              <div className="ffos-module-icon"><module.icon size={24} /></div>
+              <span className="ffos-module-tag">{module.tag}</span>
+              <strong>{module.title}</strong>
+              <small>{module.desc}</small>
+            </a>
+          ))}
+        </motion.section>
       </motion.div>
 
-      <nav className="ffos-bottom-nav"><a href="/agents">الوكلاء</a><a href="/tasks">المهام</a><a href="/calendar">التقويم</a><a href="/secretary">السكرتير</a><a href="/system">النظام</a></nav>
+      <nav className="ffos-bottom-nav">
+        <a href="/agents">الوكلاء</a>
+        <a href="/tasks">المهام</a>
+        <a href="/calendar">التقويم</a>
+        <a href="/secretary">السكرتير</a>
+        <a href="/system">النظام</a>
+      </nav>
     </main>
   );
 }
