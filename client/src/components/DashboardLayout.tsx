@@ -105,7 +105,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div dir="rtl" className="bg-[#030303] min-h-screen text-slate-200">
+    <div dir="rtl" className="min-h-screen overflow-x-clip bg-[#05070c] text-slate-100">
       <SidebarProvider
         style={
           {
@@ -173,7 +173,8 @@ function DashboardLayoutContent({
       <div className="relative" ref={sidebarRef}>
         <Sidebar
           collapsible="icon"
-          className="border-l border-white/10 bg-[#0a0a0a]/80 backdrop-blur-3xl shadow-[10px_0_30px_rgba(0,0,0,0.5)]"
+          side="right"
+          className="border-l border-white/10 bg-[#0f1117]/85 backdrop-blur-3xl shadow-[10px_0_30px_rgba(0,0,0,0.5)]"
           disableTransition={isResizing}
         >
           <SidebarHeader className="h-20 justify-center border-b border-white/5">
@@ -296,7 +297,7 @@ function DashboardLayoutContent({
           </div>
         )}
 
-        <main className="flex-1 min-h-screen relative overflow-hidden bg-[#020202]">
+        <main className="flex-1 min-h-screen relative overflow-x-clip bg-[#05070c]">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none" />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
           <motion.div
@@ -304,7 +305,7 @@ function DashboardLayoutContent({
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="relative z-10 p-6 md:p-8 h-full"
+            className="ff-content-frame relative z-10 h-full"
           >
             {children}
           </motion.div>

@@ -10,7 +10,16 @@ function today() { return new Date().toISOString().slice(0, 10); }
 function asArray<T = any>(value: any): T[] { return Array.isArray(value) ? value : []; }
 function normalizeStatus(status?: string): TaskStatus { return statuses.includes(status as TaskStatus) ? status as TaskStatus : 'todo'; }
 function normalizePriority(priority?: string): Priority { return ['low','medium','high','urgent'].includes(String(priority)) ? priority as Priority : 'medium'; }
-const emptyForm = { title: '', description: '', status: 'todo' as TaskStatus, priority: 'medium' as Priority, dueDate: today(), dueTime: '', listName: 'Focus', recurrence: 'none' as const };
+const emptyForm: {
+  title: string;
+  description: string;
+  status: TaskStatus;
+  priority: Priority;
+  dueDate: string;
+  dueTime: string;
+  listName: string;
+  recurrence: 'none' | 'daily' | 'weekly' | 'monthly';
+} = { title: '', description: '', status: 'todo', priority: 'medium', dueDate: today(), dueTime: '', listName: 'Focus', recurrence: 'none' };
 
 export default function TaskCenterPage() {
   const memory = useLocalMemory();

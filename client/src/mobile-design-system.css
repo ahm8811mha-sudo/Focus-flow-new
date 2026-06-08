@@ -1,0 +1,481 @@
+/* Focus Flow mobile-first premium interface layer */
+:root {
+  --ff-app-bg: #05070c;
+  --ff-app-bg-2: #0a0f1d;
+  --ff-glass: rgba(255, 255, 255, 0.075);
+  --ff-glass-strong: rgba(255, 255, 255, 0.115);
+  --ff-glass-soft: rgba(255, 255, 255, 0.045);
+  --ff-line: rgba(255, 255, 255, 0.13);
+  --ff-text: #f5f5f7;
+  --ff-text-soft: rgba(245, 245, 247, 0.68);
+  --ff-text-muted: rgba(245, 245, 247, 0.46);
+  --ff-blue: #0a84ff;
+  --ff-cyan: #64d2ff;
+  --ff-violet: #bf5af2;
+  --ff-radius-xl: 28px;
+  --ff-radius-md: 16px;
+  --ff-shadow: 0 24px 80px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --ff-page-x: clamp(10px, 3.5vw, 28px);
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100dvh;
+  overflow-x: clip;
+  background:
+    radial-gradient(circle at 14% -8%, rgba(10, 132, 255, 0.22), transparent 34%),
+    radial-gradient(circle at 88% -10%, rgba(191, 90, 242, 0.2), transparent 32%),
+    linear-gradient(180deg, var(--ff-app-bg), var(--ff-app-bg-2) 54%, var(--ff-app-bg));
+  color: var(--ff-text);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+img,
+video,
+canvas,
+svg,
+table {
+  max-width: 100%;
+}
+
+button,
+[role="button"],
+a[href],
+input,
+select,
+textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ff-app-bottom-nav {
+  position: fixed;
+  right: max(10px, env(safe-area-inset-right));
+  bottom: max(10px, env(safe-area-inset-bottom));
+  left: max(10px, env(safe-area-inset-left));
+  z-index: 70;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--ff-line);
+  border-radius: 24px;
+  background: rgba(15, 17, 23, 0.78);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+}
+
+.ff-app-bottom-nav a {
+  min-height: 48px;
+  border-radius: 17px;
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  color: var(--ff-text-muted);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid transparent;
+}
+
+.ff-app-bottom-nav a.active {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(100, 210, 255, 0.24), rgba(10, 132, 255, 0.28), rgba(191, 90, 242, 0.2));
+  border-color: rgba(100, 210, 255, 0.28);
+}
+
+.ff-app-bottom-nav svg {
+  width: 18px;
+  height: 18px;
+}
+
+[data-slot="sidebar-wrapper"],
+[data-slot="sidebar-inset"],
+[data-slot="sidebar-inset"] > main,
+.ff-content-frame {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.ff-content-frame {
+  padding: 12px 10px 88px;
+}
+
+[data-slot="card"],
+[data-slot="dialog-content"],
+.glass-card,
+.premium-card,
+.panel,
+.hero-card,
+.calendar-card,
+.details-card,
+.stat-card,
+.status-card,
+.task-card,
+.project-card,
+.project-tab,
+.project-hero,
+.stage,
+.resource-card,
+.result-box,
+.agent-tile,
+.session-card,
+.action-card,
+.ffos-hero,
+.ffos-status,
+.ffos-metric,
+.ffos-feature,
+.ffos-task-panel,
+.ffos-task,
+.ffos-module,
+.ffos-daily,
+.ffos-agent-card,
+.ffos-project-card {
+  background: linear-gradient(145deg, var(--ff-glass-strong), var(--ff-glass-soft)) !important;
+  border: 1px solid var(--ff-line) !important;
+  border-radius: var(--ff-radius-xl) !important;
+  box-shadow: var(--ff-shadow) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+.ffos-shell,
+.tasks-shell,
+.projects-shell,
+.agents-shell,
+.calendar-shell,
+.system-shell,
+.premium-shell {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100dvh !important;
+  overflow-x: clip !important;
+  padding-right: var(--ff-page-x) !important;
+  padding-left: var(--ff-page-x) !important;
+  padding-bottom: calc(94px + env(safe-area-inset-bottom)) !important;
+  background:
+    radial-gradient(circle at 14% -8%, rgba(10, 132, 255, 0.22), transparent 34%),
+    radial-gradient(circle at 88% -10%, rgba(191, 90, 242, 0.2), transparent 32%),
+    linear-gradient(180deg, var(--ff-app-bg), var(--ff-app-bg-2) 54%, var(--ff-app-bg)) !important;
+  color: var(--ff-text) !important;
+}
+
+.ffos-container,
+.tasks-shell > *,
+.projects-shell > *,
+.agents-shell > *,
+.calendar-shell > *,
+.system-shell > *,
+.premium-shell > * {
+  width: 100%;
+  max-width: min(1180px, 100%);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.hero-card,
+.calendar-hero,
+.ffos-hero,
+.tasks-shell .hero-card,
+.projects-shell .hero-card,
+.agents-shell .hero-card,
+.system-shell .hero-card {
+  padding: clamp(16px, 5vw, 36px) !important;
+  text-align: right !important;
+  overflow: hidden !important;
+}
+
+.ffos-title,
+.hero-card h1,
+.calendar-hero h1,
+.tasks-shell .hero-card h1,
+.projects-shell .hero-card h1,
+.agents-shell .hero-card h1,
+.system-shell .hero-card h1 {
+  color: #fff !important;
+  font-size: clamp(30px, 10vw, 72px) !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.04em !important;
+  overflow-wrap: anywhere;
+}
+
+.ffos-lead,
+.hero-card p,
+.calendar-hero p,
+.panel p,
+.task-card p,
+.project-tab small,
+.stage small,
+.details-card p,
+.system-shell .panel p,
+.agents-shell p,
+.calendar-shell .task-row p {
+  color: var(--ff-text-soft) !important;
+  line-height: 1.75 !important;
+}
+
+.eyebrow,
+.ffos-eyebrow,
+.ffos-section-kicker,
+.section-title span,
+.stat-card span,
+.status-card b,
+.stats-grid span {
+  color: var(--ff-cyan) !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+}
+
+button,
+.button,
+[data-slot="button"],
+.ffos-btn,
+.primary,
+.primary-wide,
+.hero-actions a,
+.hero-actions button,
+.toolbar button,
+.actions button,
+.editor-actions button,
+.quick-box button,
+.mini-link,
+.attach-button {
+  min-height: 48px !important;
+  border-radius: var(--ff-radius-md) !important;
+  font-weight: 800 !important;
+  white-space: normal !important;
+}
+
+input,
+textarea,
+select,
+[data-slot="input"],
+[data-slot="textarea"] {
+  min-height: 48px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  border-radius: var(--ff-radius-md) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(16, 22, 35, 0.78) !important;
+  color: #fff !important;
+  font-size: 16px !important;
+}
+
+textarea {
+  min-height: 96px !important;
+}
+
+.stats-grid,
+.status-grid,
+.ffos-metrics,
+.ffos-modules,
+.ffos-projects,
+.ffos-agent-grid,
+.agent-grid,
+.resource-grid,
+.pmp-grid,
+.pmp-kpis {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 12px !important;
+}
+
+.layout,
+.details-grid,
+.ffos-main-grid,
+.projects-shell .layout,
+.agents-shell .layout {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+  width: 100% !important;
+  max-width: min(1180px, 100%) !important;
+}
+
+.workspace,
+.sidebar,
+.sessions-panel,
+.panel,
+.calendar-card,
+.details-card {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.kanban-grid,
+.kanban-board,
+.result-table,
+.calendar-card,
+.details-card,
+.table-wrap,
+[class*="table"] {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.tasks-shell .kanban-grid {
+  overflow-x: clip !important;
+}
+
+.tasks-shell .column,
+.kanban-col {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.calendar-shell .weekdays,
+.calendar-shell .calendar-grid {
+  gap: 4px !important;
+}
+
+.calendar-shell .calendar-grid button {
+  min-height: 54px !important;
+  padding: 7px !important;
+  border-radius: 14px !important;
+}
+
+.calendar-shell .calendar-grid small,
+.calendar-shell .calendar-grid em {
+  display: none !important;
+}
+
+.projects-shell .project-hero,
+.projects-shell .stage-head,
+.calendar-shell .month-header,
+.calendar-shell .task-row,
+.system-shell .task-row,
+.section-title,
+.ffos-task-head {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  align-items: stretch !important;
+}
+
+.projects-shell .score {
+  width: 100% !important;
+}
+
+.projects-shell .sidebar {
+  display: flex !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  padding: 10px !important;
+  scroll-snap-type: x mandatory;
+}
+
+.projects-shell .project-tab {
+  min-width: 150px !important;
+  scroll-snap-align: start;
+}
+
+[data-slot="dialog-overlay"] {
+  background: rgba(0, 0, 0, 0.72) !important;
+  backdrop-filter: blur(18px);
+}
+
+[data-slot="dialog-content"] {
+  width: calc(100vw - 20px) !important;
+  max-width: 680px !important;
+  max-height: calc(100dvh - 24px) !important;
+  overflow-y: auto !important;
+  padding: 18px !important;
+  color: var(--ff-text) !important;
+}
+
+@media (min-width: 640px) {
+  .stats-grid,
+  .status-grid,
+  .ffos-metrics,
+  .ffos-projects,
+  .agent-grid,
+  .resource-grid,
+  .pmp-grid,
+  .pmp-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .ff-content-frame {
+    padding: 18px 18px 96px;
+  }
+}
+
+@media (min-width: 900px) {
+  .ff-app-bottom-nav {
+    display: none;
+  }
+
+  .ff-content-frame {
+    padding: 26px 28px;
+  }
+
+  .ffos-shell,
+  .tasks-shell,
+  .projects-shell,
+  .agents-shell,
+  .calendar-shell,
+  .system-shell,
+  .premium-shell {
+    padding-bottom: 40px !important;
+  }
+
+  .stats-grid,
+  .status-grid,
+  .ffos-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .ffos-modules {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .layout,
+  .projects-shell .layout,
+  .agents-shell .layout {
+    grid-template-columns: minmax(230px, 300px) minmax(0, 1fr) !important;
+  }
+
+  .calendar-shell .details-grid,
+  .ffos-main-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr) !important;
+  }
+
+  .projects-shell .project-hero,
+  .projects-shell .stage-head,
+  .calendar-shell .month-header,
+  .calendar-shell .task-row,
+  .system-shell .task-row,
+  .section-title,
+  .ffos-task-head {
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .projects-shell .sidebar {
+    display: grid !important;
+    overflow: visible !important;
+  }
+
+  .calendar-shell .calendar-grid button {
+    min-height: 78px !important;
+  }
+
+  .calendar-shell .calendar-grid small,
+  .calendar-shell .calendar-grid em {
+    display: block !important;
+  }
+}

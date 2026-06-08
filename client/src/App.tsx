@@ -1,4 +1,5 @@
 import "./pro-consistency.css";
+import "./mobile-design-system.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
@@ -28,6 +29,8 @@ import DirectoryPage from "./pages/DirectoryPage";
 import ExecutionLogPage from "./pages/ExecutionLogPage";
 import TablesPage from "./pages/TablesPage";
 import SecretaryDashboardPage from "./pages/SecretaryDashboardPage";
+import PwaInstallButton from "./components/PwaInstallButton";
+import AppBottomNav from "./components/AppBottomNav";
 
 const ClassicTasksRoute = () => (
   <DashboardLayout>
@@ -76,6 +79,8 @@ function App() {
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster />
+          <PwaInstallButton />
+          <AppBottomNav />
           <div dir="rtl"><Router /></div>
         </TooltipProvider>
       </ThemeProvider>
