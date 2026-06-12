@@ -1,12 +1,12 @@
-import { BrainCircuit, CalendarDays, FolderKanban, House, ListChecks } from "lucide-react";
+import { BrainCircuit, CalendarDays, House, ListChecks, Settings2 } from "lucide-react";
 import { useLocation } from "wouter";
 
 const items = [
   { href: "/", label: "الرئيسية", icon: House },
   { href: "/tasks", label: "المهام", icon: ListChecks },
-  { href: "/agents", label: "الوكلاء", icon: BrainCircuit },
-  { href: "/projects", label: "المشاريع", icon: FolderKanban },
   { href: "/calendar", label: "التقويم", icon: CalendarDays },
+  { href: "/agents", label: "الوكلاء", icon: BrainCircuit },
+  { href: "/system", label: "النظام", icon: Settings2 },
 ];
 
 export default function AppBottomNav() {
