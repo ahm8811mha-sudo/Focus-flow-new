@@ -1,5 +1,6 @@
 import "./pro-consistency.css";
 import "./mobile-design-system.css";
+import "./apple-redesign.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
