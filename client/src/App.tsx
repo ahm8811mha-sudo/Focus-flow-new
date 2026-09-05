@@ -32,6 +32,7 @@ import TablesPage from "./pages/TablesPage";
 import SecretaryDashboardPage from "./pages/SecretaryDashboardPage";
 import PwaInstallButton from "./components/PwaInstallButton";
 import AppBottomNav from "./components/AppBottomNav";
+import CompanyOSPage from "./pages/CompanyOSPage";
 
 const ClassicTasksRoute = () => (
   <DashboardLayout>
@@ -56,6 +57,7 @@ function Router() {
       <Route path="/personal-agents" component={PersonalAgentsPage} />
       <Route path="/system" component={SystemHubPage} />
       <Route path="/hub" component={SystemHubPage} />
+      <Route path="/company" component={CompanyOSPage} />
       <Route path="/home-3d" component={Home3D} />
       <Route path="/classic" component={Home} />
       <Route path="/calendar" component={CalendarPage} />

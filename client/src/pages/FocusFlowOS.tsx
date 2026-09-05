@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocalMemory } from '@/hooks/useLocalMemory';
 import { getStoredDriveToken } from '@/lib/googleDriveCloud';
 import { motion } from 'framer-motion';
-import { Sparkles, Terminal, CheckCircle2, AlertCircle, LayoutGrid, BrainCircuit, Calendar, FolderKanban, Search, ClipboardList, Table2, UserRoundCheck } from 'lucide-react';
+import { Sparkles, Terminal, CheckCircle2, AlertCircle, LayoutGrid, BrainCircuit, Calendar, FolderKanban, Search, ClipboardList, Table2, UserRoundCheck, BriefcaseBusiness } from 'lucide-react';
 import './focus-flow-os.css';
 
 function today() { return new Date().toISOString().slice(0, 10); }
 
 const modules = [
+  { title: 'نظام الشركة', href: '/company', tag: 'Company OS', desc: 'فكرة، قرار، تمويل، تنفيذ، وإثبات.', icon: BriefcaseBusiness },
   { title: 'الوكلاء', href: '/agents', tag: 'AI Command', desc: 'أوامر تنفيذ، مرفقات، صور، جداول، مواعيد، ورسائل.', icon: BrainCircuit },
   { title: 'مركز المهام', href: '/tasks', tag: 'Tasks', desc: 'كل مهامك ومهام الوكلاء في كانبان واحد.', icon: CheckCircle2 },
   { title: 'التقويم', href: '/calendar', tag: 'Calendar', desc: 'تعديل المواعيد يدويًا أو بأمر سريع.', icon: Calendar },
@@ -78,7 +79,7 @@ export default function FocusFlowOS() {
             <p className="ffos-lead">ابدأ من هنا: ماذا عليك اليوم، ماذا نفذ الوكلاء، حالة المشاريع، وصحة النظام.</p>
             
             <div className="ffos-actions">
-              <a className="ffos-btn primary" href="/projects">تشغيل داخل مشروع</a>
+              <a className="ffos-btn primary" href="/company">تشغيل الشركة</a>
               <a className="ffos-btn" href="/secretary">لوحة السكرتير</a>
               <a className="ffos-btn" href="/execution">سجل التنفيذ</a>
             </div>

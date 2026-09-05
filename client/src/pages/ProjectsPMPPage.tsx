@@ -113,10 +113,10 @@ export default function ProjectsPMPPage() {
     if (!activeProject) return;
     setBusyItem(stage.id);
     const stamp = new Date().toLocaleString('ar-SA');
-    const summary = `تم تشغيل ${stage.title} ضمن نموذج PMP. تم حفظ النتيجة داخل المرحلة وسجل المشروع.`;
-    const result = { status: 'done' as const, summary, outputs: ['تحديث بيانات المرحلة', 'إنشاء سجل متابعة', 'ربط النتيجة بالمشروع'], tasks: 1, tables: 1, drafts: 0, events: 0, updatedAt: stamp };
+    const summary = `تم تجهيز ${stage.title} داخل نموذج PMP وفتح مهمة متابعة. لم يُنفذ أي نشاط خارجي ولم تُسجل نتيجة كمنجزة.`;
+    const result = { status: 'in_progress' as const, summary, outputs: ['تحديث بيانات المرحلة', 'إنشاء مهمة متابعة', 'ربط المرحلة بسجل المشروع'], tasks: 1, tables: 0, drafts: 0, events: 0, updatedAt: stamp };
     await memory.saveTask({ title: `PMP: ${stage.title}`, description: summary, priority: 'high', status: 'todo', dueDate: stage.dueDate || today(), dueTime: '', listName: `مشروع: ${activeProject.name}`, projectId: activeProject.id, projectName: activeProject.name, recurrence: 'none' });
-    save(projects.map((p) => p.id !== activeId ? p : { ...p, stages: asArray<ProjectStage>(p.stages).map((s) => s.id === stage.id ? { ...s, status: 'in_progress', lastRun: stamp, runCount: (s.runCount || 0) + 1, agentResult: result } : s), executionLog: [`${stamp} — ${stage.title} — ${summary}`, ...asArray<string>(p.executionLog)].slice(0, 30), agentResults: [{ id: uid(), agentName: 'PMP', goal: stage.title, status: 'done', summary, results: result.outputs, tasks: ['1 مهمة'], tables: ['1 جدول'], events: [], drafts: [], createdAt: stamp }, ...asArray<any>(p.agentResults)].slice(0, 50) }));
+    save(projects.map((p) => p.id !== activeId ? p : { ...p, stages: asArray<ProjectStage>(p.stages).map((s) => s.id === stage.id ? { ...s, status: 'in_progress', lastRun: stamp, runCount: (s.runCount || 0) + 1, agentResult: result } : s), executionLog: [`${stamp} — ${stage.title} — ${summary}`, ...asArray<string>(p.executionLog)].slice(0, 30), agentResults: [{ id: uid(), agentName: 'PMP', goal: stage.title, status: 'in_progress', summary, results: result.outputs, tasks: ['1 مهمة'], tables: [], events: [], drafts: [], createdAt: stamp }, ...asArray<any>(p.agentResults)].slice(0, 50) }));
     setNotice(summary);
     setBusyItem('');
   }
